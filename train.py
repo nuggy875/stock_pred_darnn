@@ -8,16 +8,13 @@ from torch.backends import cudnn
 
 import utils
 from option import opt
-from data_loading import Loader
+from data_loading import DataLoader
 from model import BinaryLSTM
 
 
 class TrainModel:
     def __init__(self):
-        self.prices = Loader(data_path=opt.data_path,
-                            filename=opt.dataset+'.csv',
-                            window_size = opt.window_size,
-                            data_type=opt.data_type)
+        self.prices = DataLoader()
 
     def __call__(self, split_rate=.9, seq_length=30, num_layers=2, hidden_size=128):
 
@@ -53,7 +50,7 @@ class TrainModel:
             Y_pred = model(X_train[:, :batch_size, :])
             if batch_size==1:
                 Y_pred = torch.unsqueeze(Y_pred, 1)
-            if self.window_size == 1:
+            if opt.window_size == 1:
                 Y_pred = torch.unsqueeze(Y_pred, 2)
             Y_pred = torch.squeeze(Y_pred[num_layers-1, :, :])
 
@@ -68,7 +65,7 @@ class TrainModel:
                 y = model(X_train[:, i : i + batch_size, :])
                 if batch_size==1:
                     y = torch.squeeze(y, 1)
-                if self.window_size==1:
+                if opt.window_size==1:
                     y = torch.unsqueeze(y, 2)
                 y = torch.squeeze(y[num_layers - 1, :, :])
                 Y_pred = torch.cat((Y_pred, y))

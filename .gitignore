@@ -11,6 +11,7 @@ videos/
 results/
 dcgan/result/
 result/
+.vscode
 
 # pycharm IDE
 __pycache__/

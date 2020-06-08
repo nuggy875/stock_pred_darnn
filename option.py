@@ -6,6 +6,8 @@ parser.add_argument('--model', type=str, default='LSTM')
 
 parser.add_argument('--data_path', type=str, default='data/')
 parser.add_argument('--dataset', type=str, default='KOSPI200')
+parser.add_argument('--date_start', type=str, default='1990-01-03')
+parser.add_argument('--date_end', type=str, default='2019-12-17')
 parser.add_argument('--data_type', type=str, help='price, log, volat', default='log')
 
 parser.add_argument('--bs', dest='batch_size', help='batch size', default=8, type=int)
@@ -17,7 +19,6 @@ parser.set_defaults(test=False)
 
 parser.add_argument('--visdom', dest='visdom', action='store_true')
 parser.set_defaults(visdom=False)
-
 
 opt = parser.parse_args()
 

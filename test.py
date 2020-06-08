@@ -6,12 +6,12 @@ from torch import nn
 
 import utils
 from option import opt
-from data_loading import Loader
+from data_loading import DataLoader
 
 
 class TestModel:
     def __init__(self):
-        self.prices = Loader(data_path=opt.data_path,
+        self.prices = DataLoader(data_path=opt.data_path,
                             filename=opt.dataset+'.csv',
                             window_size=opt.window_size,
                             data_type=opt.data_type)
