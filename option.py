@@ -3,6 +3,7 @@ import torch
 import typing
 import numpy as np
 import collections
+import os
 
 parser=argparse.ArgumentParser()
 
@@ -14,7 +15,7 @@ parser.add_argument('--ehs', type=int, default=64, help='dimension of Encoder hi
 parser.add_argument('--dhs', type=int, default=64, help='dimension of Decoder hidden state')
 parser.add_argument('--t', type=int, default=10, help='number of time steps')
 parser.add_argument('--lr', type=float, default=0.01, help='learning rate')
-parser.add_argument('--epoch', type=int, default=10, help='Epoch')
+parser.add_argument('--epoch', type=int, default=100, help='Epoch')
 
 parser.add_argument('--test', dest='test', action='store_true')
 parser.set_defaults(test=False)
@@ -27,6 +28,11 @@ opt = parser.parse_args()
 opt.device='cuda' if torch.cuda.is_available() else 'cpu'
 
 print(opt)
+
+if not os.path.exists('plots'):
+    os.makedirs('plots')
+if not os.path.exists('saves'):
+    os.makedirs('saves')
 
 
 class TrainConfig(typing.NamedTuple):

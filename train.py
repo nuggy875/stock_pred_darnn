@@ -10,7 +10,7 @@ from torch import optim
 from torch.nn import functional as tf
 from torch.autograd import Variable
 from sklearn.preprocessing import StandardScaler
-# from sklearn.externals import joblib
+import joblib
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -21,8 +21,8 @@ from utils import *
 from option import opt, DaRnnNet, TrainData, TrainConfig
 
 
-def save_json(kwargs: str):
-    with open(os.path.join("data", kwargs+".json"), "w") as fi:
+def save_json(kwargs: str, filename:str):
+    with open(os.path.join("saves", filename+".json"), "w") as fi:
         json.dump(kwargs, fi, indent=4)
 
 
@@ -81,9 +81,12 @@ def train():
     train_size = int(train_data.feats.shape[0] * 0.7)
     config = TrainConfig(T, train_size, batch_size, criterion)
     print("Training Size : {}".format(config.train_size))
-
+    net_kwargs = {"batch_size": batch_size, "T": T}
     enc_kwargs = {"input_size": train_data.feats.shape[1], "hidden_size": encoder_hidden_size, "T": T}
     dec_kwargs = {"encoder_hidden_size": encoder_hidden_size, "decoder_hidden_size": decoder_hidden_size, "T": T, "out_feats": len(targ_cols)}
+    save_json(net_kwargs, "kwargs_net")
+    save_json(enc_kwargs, "kwargs_enc")
+    save_json(dec_kwargs, "kwargs_dec")
     encoder = Encoder(**enc_kwargs).to(opt.device)
     decoder = Decoder(**dec_kwargs).to(opt.device)
     encoder_optimizer = optim.Adam(params=[p for p in encoder.parameters() if p.requires_grad], lr=learning_rate)
@@ -157,8 +160,9 @@ def train():
     plt.legend(loc='upper left')
     save_or_show_plot("final_predicted.png", opt.show)
     
-    torch.save(net.encoder.state_dict(), os.path.join("trained_model", "encoder.torch"))
-    torch.save(net.decoder.state_dict(), os.path.join("trained_model", "decoder.torch"))
+    joblib.dump(scaler, os.path.join("saves", "scaler.pkl"))
+    torch.save(net.encoder.state_dict(), os.path.join("saves", "encoder.torch"))
+    torch.save(net.decoder.state_dict(), os.path.join("saves", "decoder.torch"))
     
 
 if __name__ == "__main__":

@@ -5,13 +5,13 @@ import torch
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.externals import joblib
+import joblib
 
-from modules import Encoder, Decoder
+from model import Encoder, Decoder
 from utils import numpy_to_tvar
 import utils
-from custom_types import TrainData
-from constants import device
+
+from option import opt, TrainData
 
 
 def preprocess_data(dat, col_names, scale) -> TrainData:
@@ -54,27 +54,29 @@ def predict(encoder, decoder, t_dat, batch_size: int, T: int) -> np.ndarray:
 debug = False
 save_plots = False
 
-with open(os.path.join("data", "enc_kwargs.json"), "r") as fi:
+with open(os.path.join("saves", "enc_kwargs.json"), "r") as fi:
     enc_kwargs = json.load(fi)
-enc = Encoder(**enc_kwargs)
-enc.load_state_dict(torch.load(os.path.join("data", "encoder.torch"), map_location=device))
-
-with open(os.path.join("data", "dec_kwargs.json"), "r") as fi:
+with open(os.path.join("saves", "dec_kwargs.json"), "r") as fi:
     dec_kwargs = json.load(fi)
-dec = Decoder(**dec_kwargs)
-dec.load_state_dict(torch.load(os.path.join("data", "decoder.torch"), map_location=device))
+with open(os.path.join("saves", "net_kwargs.json"), "r") as fi:
+    net_kwargs = json.load(fi)
 
-scaler = joblib.load(os.path.join("data", "scaler.pkl"))
-raw_data = pd.read_csv(os.path.join("data", "nasdaq100_padding.csv"), nrows=100 if debug else None)
-targ_cols = ("NDX",)
+enc = Encoder(**enc_kwargs)
+enc.load_state_dict(torch.load(os.path.join("saves", "encoder.torch"), map_location=opt.device))
+
+dec = Decoder(**dec_kwargs)
+dec.load_state_dict(torch.load(os.path.join("saves", "decoder.torch"), map_location=opt.device))
+
+scaler = joblib.load(os.path.join("saves", "scaler.pkl"))
+raw_data = pd.read_csv(os.path.join("data", opt.dataset+".csv"), nrows=100 if debug else None)
+targ_cols = ("KOSPI200",)
 data = preprocess_data(raw_data, targ_cols, scaler)
 
-with open(os.path.join("data", "da_rnn_kwargs.json"), "r") as fi:
-    da_rnn_kwargs = json.load(fi)
-final_y_pred = predict(enc, dec, data, **da_rnn_kwargs)
+
+final_y_pred = predict(enc, dec, data, **net_kwargs)
 
 plt.figure()
 plt.plot(final_y_pred, label='Predicted')
-plt.plot(data.targs[(da_rnn_kwargs["T"]-1):], label="True")
+plt.plot(data.targs[(net_kwargs["T"]-1):], label="True")
 plt.legend(loc='upper left')
 utils.save_or_show_plot("final_predicted_reloaded.png", save_plots)
