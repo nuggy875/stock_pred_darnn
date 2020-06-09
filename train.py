@@ -17,23 +17,13 @@ import pandas as pd
 import numpy as np
 
 from model import Encoder, Decoder
-from utils import prep_train_data, numpy_to_tvar, adjust_learning_rate
-from option import opt
+from utils import *
+from option import opt, DaRnnNet, TrainData, TrainConfig
 
 
-class TrainConfig(typing.NamedTuple):
-    T: int
-    train_size: int
-    batch_size: int
-    loss_func: typing.Callable
-
-
-class TrainData(typing.NamedTuple):
-    feats: np.ndarray
-    targs: np.ndarray
-
-
-DaRnnNet = collections.namedtuple("DaRnnNet", ["encoder", "decoder", "enc_opt", "dec_opt"])
+def save_json(kwargs: str):
+    with open(os.path.join("data", kwargs+".json"), "w") as fi:
+        json.dump(kwargs, fi, indent=4)
 
 
 def test(t_net: DaRnnNet, t_dat: TrainData, train_size: int, batch_size: int, T: int, on_train=False):
@@ -68,7 +58,7 @@ def test(t_net: DaRnnNet, t_dat: TrainData, train_size: int, batch_size: int, T:
 
 def train():
     # ====== Read Data ======
-    raw_data = pd.read_csv(os.path.join(opt.data_path, opt.dataset), index_col='Date')
+    raw_data = pd.read_csv(os.path.join(opt.data_path, opt.dataset+'.csv'), index_col='Date')
     targ_cols = ("KOSPI200",)                           # target Column
     scale = StandardScaler().fit(raw_data)              # Data Scaling
     proc_dat = scale.transform(raw_data)
@@ -139,7 +129,7 @@ def train():
             y_train_pred = test(net, train_data,
                                     config.train_size, config.batch_size, config.T,
                                     on_train=True)
-            '''
+            
             plt.figure()
             plt.plot(range(1, 1 + len(train_data.targs)), train_data.targs,
                     label="True")
@@ -148,31 +138,28 @@ def train():
             plt.plot(range(config.T + len(y_train_pred), len(train_data.targs) + 1), y_test_pred,
                     label='Predicted - Test')
             plt.legend(loc='upper left')
-            # utils.save_or_show_plot(f"pred_{e_i}.png", save_plots)
-            '''
+            save_or_show_plot("pred_{}.png".format(e_i), opt.show)
+            
 
     final_y_pred = test(net, train_data, config.train_size, config.batch_size, config.T)
-    '''
+    
     plt.figure()
     plt.semilogy(range(len(iter_losses)), iter_losses)
-    # utils.save_or_show_plot("iter_loss.png", save_plots)
+    save_or_show_plot("iter_loss.png", opt.show)
 
     plt.figure()
     plt.semilogy(range(len(epoch_losses)), epoch_losses)
-    # utils.save_or_show_plot("epoch_loss.png", save_plots)
+    save_or_show_plot("epoch_loss.png", opt.show)
 
     plt.figure()
     plt.plot(final_y_pred, label='Predicted')
     plt.plot(train_data.targs[config.train_size:], label="True")
     plt.legend(loc='upper left')
-    # utils.save_or_show_plot("final_predicted.png", save_plots)
-    '''
-    torch.save(net.encoder.state_dict(), os.path.join("data", "encoder.torch"))
-    torch.save(net.decoder.state_dict(), os.path.join("data", "decoder.torch"))
+    save_or_show_plot("final_predicted.png", opt.show)
+    
+    torch.save(net.encoder.state_dict(), os.path.join("trained_model", "encoder.torch"))
+    torch.save(net.decoder.state_dict(), os.path.join("trained_model", "decoder.torch"))
     
 
 if __name__ == "__main__":
     train()
-
-
-    
