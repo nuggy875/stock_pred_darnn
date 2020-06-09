@@ -1,103 +1,178 @@
-import sys
-import time
-import visdom
+import collections
+import typing
+from typing import Tuple
+import json
+import os
 
 import torch
 from torch import nn
-from torch.backends import cudnn
+from torch import optim
+from torch.nn import functional as tf
+from torch.autograd import Variable
+from sklearn.preprocessing import StandardScaler
+# from sklearn.externals import joblib
 
-import utils
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+
+from model import Encoder, Decoder
+from utils import prep_train_data, numpy_to_tvar, adjust_learning_rate
 from option import opt
-from data_loading import DataLoader
-from model import BinaryLSTM
 
 
-class TrainModel:
-    def __init__(self):
-        self.prices = DataLoader()
+class TrainConfig(typing.NamedTuple):
+    T: int
+    train_size: int
+    batch_size: int
+    loss_func: typing.Callable
 
-    def __call__(self, split_rate=.9, seq_length=30, num_layers=2, hidden_size=128):
 
-        if opt.visdom:
-            vis = visdom.Visdom()
-        else:
-            vis = None
+class TrainData(typing.NamedTuple):
+    feats: np.ndarray
+    targs: np.ndarray
 
-        batch_size = opt.batch_size
-        train_size = int(self.prices.train_size * split_rate)
-        X = self.prices.X[:train_size, :]
-        X = torch.unsqueeze(torch.from_numpy(X).float(), 1)
 
-        if opt.data_type=='price':
-            X_train, Y_target = utils.data_process_price(X, train_size = X.shape[0], num_steps = seq_length)
-        elif opt.data_type=='log':
-            X_train, Y_target = utils.data_process_log(X, train_size = X.shape[0], num_steps = seq_length)
+DaRnnNet = collections.namedtuple("DaRnnNet", ["encoder", "decoder", "enc_opt", "dec_opt"])
 
-        X_train = X_train.to(opt.device)
-        Y_target = Y_target.to(opt.device)
 
-        model = BinaryLSTM(opt.window_size, hidden_size, num_layers=num_layers)
-        model = model.to(opt.device)
+def test(t_net: DaRnnNet, t_dat: TrainData, train_size: int, batch_size: int, T: int, on_train=False):
+    out_size = t_dat.targs.shape[1]
+    if on_train:
+        y_pred = np.zeros((train_size - T + 1, out_size))
+    else:
+        y_pred = np.zeros((t_dat.feats.shape[0] - train_size, out_size))
 
-        criterion = nn.BCELoss().to(opt.device)
-        optimizer = torch.optim.Adam(model.parameters())
+    for y_i in range(0, len(y_pred), batch_size):
+        y_slc = slice(y_i, y_i + batch_size)
+        batch_idx = range(len(y_pred))[y_slc]
+        b_len = len(batch_idx)
+        X = np.zeros((b_len, T - 1, t_dat.feats.shape[1]))
+        y_history = np.zeros((b_len, T - 1, t_dat.targs.shape[1]))
 
-        timeStart = time.time()
+        for b_i, b_idx in enumerate(batch_idx):
+            if on_train:
+                idx = range(b_idx, b_idx + T - 1)
+            else:
+                idx = range(b_idx + train_size - T, b_idx + train_size - 1)
 
-        for epoch in range(opt.epoch):
-            loss_sum=0
-            # First Value
-            Y_pred = model(X_train[:, :batch_size, :])
-            if batch_size==1:
-                Y_pred = torch.unsqueeze(Y_pred, 1)
-            if opt.window_size == 1:
-                Y_pred = torch.unsqueeze(Y_pred, 2)
-            Y_pred = torch.squeeze(Y_pred[num_layers-1, :, :])
+            X[b_i, :, :] = t_dat.feats[idx, :]
+            y_history[b_i, :] = t_dat.targs[idx]
 
-            loss = criterion(Y_pred, Y_target[:batch_size])
-            loss_sum += loss.item()
+        y_history = numpy_to_tvar(y_history)
+        _, input_encoded = t_net.encoder(numpy_to_tvar(X))
+        y_pred[y_slc] = t_net.decoder(input_encoded, y_history).cpu().data.numpy()
 
-            optimizer.zero_grad()
+    return y_pred
+
+
+def train():
+    # ====== Read Data ======
+    raw_data = pd.read_csv(os.path.join(opt.data_path, opt.dataset), index_col='Date')
+    targ_cols = ("KOSPI200",)                           # target Column
+    scale = StandardScaler().fit(raw_data)              # Data Scaling
+    proc_dat = scale.transform(raw_data)
+    mask = np.ones(proc_dat.shape[1], dtype=bool)
+    dat_cols = list(raw_data.columns)
+    for col_name in targ_cols:
+        mask[dat_cols.index(col_name)] = False
+    feats = proc_dat[:, mask]
+    targs = proc_dat[:, ~mask]
+    train_data, scaler = [TrainData(feats, targs), scale]
+
+    # ====== hyperparameter ======
+    encoder_hidden_size = opt.ehs
+    decoder_hidden_size = opt.dhs
+    T = opt.t
+    learning_rate = opt.lr
+    batch_size=opt.bs
+
+    criterion = nn.MSELoss()
+    train_size = int(train_data.feats.shape[0] * 0.7)
+    config = TrainConfig(T, train_size, batch_size, criterion)
+    print("Training Size : {}".format(config.train_size))
+
+    enc_kwargs = {"input_size": train_data.feats.shape[1], "hidden_size": encoder_hidden_size, "T": T}
+    dec_kwargs = {"encoder_hidden_size": encoder_hidden_size, "decoder_hidden_size": decoder_hidden_size, "T": T, "out_feats": len(targ_cols)}
+    encoder = Encoder(**enc_kwargs).to(opt.device)
+    decoder = Decoder(**dec_kwargs).to(opt.device)
+    encoder_optimizer = optim.Adam(params=[p for p in encoder.parameters() if p.requires_grad], lr=learning_rate)
+    decoder_optimizer = optim.Adam(params=[p for p in decoder.parameters() if p.requires_grad], lr=learning_rate)
+
+    net = DaRnnNet(encoder, decoder, encoder_optimizer, decoder_optimizer)
+
+    iter_per_epoch = int(np.ceil(config.train_size * 1. / config.batch_size))
+    print('iter_per_epoch:{}'.format(iter_per_epoch))
+    iter_losses = np.zeros(opt.epoch * iter_per_epoch)
+    epoch_losses = np.zeros(opt.epoch)
+    n_iter = 0
+    for e_i in range(opt.epoch):
+        print("Epoch:{})".format(e_i))
+        perm_idx = np.random.permutation(config.train_size - config.T)
+
+        for t_i in range(0, config.train_size, config.batch_size):
+            batch_idx = perm_idx[t_i:(t_i + config.batch_size)]
+            X, y_history, y_target = prep_train_data(batch_idx, config, train_data)
+
+            net.enc_opt.zero_grad()
+            net.dec_opt.zero_grad()
+
+            input_weighted, input_encoded = net.encoder(numpy_to_tvar(X))
+            y_pred = net.decoder(input_encoded, numpy_to_tvar(y_history))
+            y_true = numpy_to_tvar(y_target)
+            loss = config.loss_func(y_pred, y_true)
             loss.backward()
-            optimizer.step()
+            net.enc_opt.step()
+            net.dec_opt.step()
 
-            for i in range(batch_size, X_train.shape[1], batch_size):
-                y = model(X_train[:, i : i + batch_size, :])
-                if batch_size==1:
-                    y = torch.squeeze(y, 1)
-                if opt.window_size==1:
-                    y = torch.unsqueeze(y, 2)
-                y = torch.squeeze(y[num_layers - 1, :, :])
-                Y_pred = torch.cat((Y_pred, y))
+            iter_losses[e_i * iter_per_epoch + t_i // config.batch_size] = loss
+            n_iter += 1
+            adjust_learning_rate(net, n_iter)
 
-                loss = criterion(y, Y_target[i : i + batch_size])
-                loss_sum += loss.item()
-                
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
-            
-            # Visdom    
-            if epoch % 10==0 and opt.visdom:
-                vis.line(X=torch.ones((1, 1)).cpu() * i + epoch * train_size,
-                        Y=torch.Tensor([loss_sum]).unsqueeze(0).cpu(),
-                        win='loss',
-                        update='append',
-                        opts=dict(xlabel='step',
-                            ylabel='Loss',
-                            title='Training Loss for {}, type:{} (bs={})'.format(opt.dataset, opt.data_type, batch_size),
-                            legend=['Loss'])
-                    )
+        epoch_losses[e_i] = np.mean(iter_losses[range(e_i * iter_per_epoch, (e_i + 1) * iter_per_epoch)])
+        
+        if e_i % 10 == 0:
+            y_test_pred = test(net, train_data, config.train_size, config.batch_size, config.T, on_train=False)
+            # TODO: make this MSE and make it work for multiple inputs
+            val_loss = y_test_pred - train_data.targs[config.train_size:]
+            print("Epoch {}, train Loss:{}, val Loss:{}".format(e_i, epoch_losses[e_i], np.mean(np.abs(val_loss))))
+            y_train_pred = test(net, train_data,
+                                    config.train_size, config.batch_size, config.T,
+                                    on_train=True)
+            '''
+            plt.figure()
+            plt.plot(range(1, 1 + len(train_data.targs)), train_data.targs,
+                    label="True")
+            plt.plot(range(config.T, len(y_train_pred) + config.T), y_train_pred,
+                    label='Predicted - Train')
+            plt.plot(range(config.T + len(y_train_pred), len(train_data.targs) + 1), y_test_pred,
+                    label='Predicted - Test')
+            plt.legend(loc='upper left')
+            # utils.save_or_show_plot(f"pred_{e_i}.png", save_plots)
+            '''
 
-            print('epoch [%d] finished, Loss Sum: %f' % (epoch, loss_sum))
+    final_y_pred = test(net, train_data, config.train_size, config.batch_size, config.T)
+    '''
+    plt.figure()
+    plt.semilogy(range(len(iter_losses)), iter_losses)
+    # utils.save_or_show_plot("iter_loss.png", save_plots)
 
+    plt.figure()
+    plt.semilogy(range(len(epoch_losses)), epoch_losses)
+    # utils.save_or_show_plot("epoch_loss.png", save_plots)
 
-        timeSpent = time.time() - timeStart
-        print('Time Spend : {}'.format(timeSpent))
-        torch.save(model, 'trained_model/'+opt.model + '_'+ opt.dataset + '_bin_' + opt.type + '.model')
-
+    plt.figure()
+    plt.plot(final_y_pred, label='Predicted')
+    plt.plot(train_data.targs[config.train_size:], label="True")
+    plt.legend(loc='upper left')
+    # utils.save_or_show_plot("final_predicted.png", save_plots)
+    '''
+    torch.save(net.encoder.state_dict(), os.path.join("data", "encoder.torch"))
+    torch.save(net.decoder.state_dict(), os.path.join("data", "decoder.torch"))
+    
 
 if __name__ == "__main__":
-    print('--- Train Mode ---')
-    Trainer = TrainModel()
-    Trainer()
+    train()
+
+
+    

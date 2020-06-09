@@ -2,17 +2,16 @@ import argparse
 import torch
 
 parser=argparse.ArgumentParser()
-parser.add_argument('--model', type=str, default='LSTM')
 
 parser.add_argument('--data_path', type=str, default='data/')
-parser.add_argument('--dataset', type=str, default='KOSPI200')
-parser.add_argument('--date_start', type=str, default='1990-01-03')
-parser.add_argument('--date_end', type=str, default='2019-12-17')
-parser.add_argument('--data_type', type=str, help='price, log, volat', default='log')
+parser.add_argument('--dataset', type=str, default='data_NAX')
 
-parser.add_argument('--bs', dest='batch_size', help='batch size', default=8, type=int)
-parser.add_argument('--epoch', default=10000, type=int)
-parser.add_argument('--window_size', type=int, default=1)
+parser.add_argument('--bs', type=int, default=128, help='batch size')
+parser.add_argument('--ehs', type=int, default=64, help='dimension of Encoder hidden state')
+parser.add_argument('--dhs', type=int, default=64, help='dimension of Decoder hidden state')
+parser.add_argument('--t', type=int, default=10, help='number of time steps')
+parser.add_argument('--lr', dest='learning_rate', type=float, default=0.01, help='learning rate')
+parser.add_argument('--epoch', type=int, default=10, type=int)
 
 parser.add_argument('--test', dest='test', action='store_true')
 parser.set_defaults(test=False)
