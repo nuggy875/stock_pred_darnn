@@ -120,7 +120,9 @@ def train():
 
             iter_losses[e_i * iter_per_epoch + t_i // config.batch_size] = loss
             n_iter += 1
-            adjust_learning_rate(net, n_iter)
+            # Learning Rate 조절 (n_iter 10000 이후): # https://www.jeremyjordan.me/nn-learning-rate/
+            if n_iter % 10000 == 0 and n_iter > 0:
+                adjust_learning_rate(net)
 
         epoch_losses[e_i] = np.mean(iter_losses[range(e_i * iter_per_epoch, (e_i + 1) * iter_per_epoch)])
         
@@ -141,25 +143,25 @@ def train():
             plt.plot(range(config.T + len(y_train_pred), len(train_data.targs) + 1), y_test_pred,
                     label='Predicted - Test')
             plt.legend(loc='upper left')
-            save_or_show_plot("pred_{}.png".format(e_i), opt.show)
-            
+            plt.savefig(os.path.join(os.path.dirname(__file__), "plots", "pred_{}.png".format(e_i)))
+
 
     final_y_pred = test(net, train_data, config.train_size, config.batch_size, config.T)
     
     plt.figure()
     plt.semilogy(range(len(iter_losses)), iter_losses)
-    save_or_show_plot("iter_loss.png", opt.show)
+    plt.savefig(os.path.join(os.path.dirname(__file__), "plots", "final_loss_iter.png"))
 
     plt.figure()
     plt.semilogy(range(len(epoch_losses)), epoch_losses)
-    save_or_show_plot("epoch_loss.png", opt.show)
+    plt.savefig(os.path.join(os.path.dirname(__file__), "plots", "final_loss_epoch.png"))
 
     plt.figure()
     plt.plot(final_y_pred, label='Predicted')
     plt.plot(train_data.targs[config.train_size:], label="True")
     plt.legend(loc='upper left')
-    save_or_show_plot("final_predicted.png", opt.show)
-    
+    plt.savefig(os.path.join(os.path.dirname(__file__), "plots", "final_predicted.png"))
+
     joblib.dump(scaler, os.path.join("saves", "scaler.pkl"))
     torch.save(net.encoder.state_dict(), os.path.join("saves", "encoder.torch"))
     torch.save(net.decoder.state_dict(), os.path.join("saves", "decoder.torch"))

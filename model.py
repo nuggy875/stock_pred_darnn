@@ -2,17 +2,7 @@ import torch
 from torch import nn
 from torch.autograd import Variable
 from torch.nn import functional as tf
-
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
-def init_hidden(x, hidden_size: int):
-    """
-    Train the initial value of the hidden state:
-    https://r2rt.com/non-zero-initial-states-for-recurrent-neural-networks.html
-    """
-    return Variable(torch.zeros(1, x.size(0), hidden_size).to(device))
+from option import opt
 
 
 class Encoder(nn.Module):
@@ -33,11 +23,13 @@ class Encoder(nn.Module):
 
     def forward(self, input_data):
         # input_data: (batch_size, T - 1, input_size)
-        input_weighted = Variable(torch.zeros(input_data.size(0), self.T - 1, self.input_size).to(device))
-        input_encoded = Variable(torch.zeros(input_data.size(0), self.T - 1, self.hidden_size).to(device))
+        input_weighted = Variable(torch.zeros(input_data.size(0), self.T - 1, self.input_size).to(opt.device))
+        input_encoded = Variable(torch.zeros(input_data.size(0), self.T - 1, self.hidden_size).to(opt.device))
         # hidden, cell: initial states with dimension hidden_size
-        hidden = init_hidden(input_data, self.hidden_size)  # 1 * batch_size * hidden_size
-        cell = init_hidden(input_data, self.hidden_size)
+        # hidden = init_hidden(input_data, self.hidden_size)  # 1 * batch_size * hidden_size
+        # cell = init_hidden(input_data, self.hidden_size)
+        hidden = Variable(torch.zeros(1, input_data.size(0), self.hidden_size).to(opt.device))
+        cell = Variable(torch.zeros(1, input_data.size(0), self.hidden_size).to(opt.device))
 
         for t in range(self.T - 1):
             # Eqn. 8: concatenate the hidden states with each predictor
@@ -86,9 +78,12 @@ class Decoder(nn.Module):
         # input_encoded: (batch_size, T - 1, encoder_hidden_size)
         # y_history: (batch_size, (T-1))
         # Initialize hidden and cell, (1, batch_size, decoder_hidden_size)
-        hidden = init_hidden(input_encoded, self.decoder_hidden_size)
-        cell = init_hidden(input_encoded, self.decoder_hidden_size)
-        context = Variable(torch.zeros(input_encoded.size(0), self.encoder_hidden_size).to(device))
+        # hidden = init_hidden(input_encoded, self.decoder_hidden_size)
+        # cell = init_hidden(input_encoded, self.decoder_hidden_size)
+
+        hidden = Variable(torch.zeros(1, input_encoded.size(0), self.decoder_hidden_size).to(opt.device))
+        cell = Variable(torch.zeros(1, input_encoded.size(0), self.decoder_hidden_size).to(opt.device))
+        context = Variable(torch.zeros(input_encoded.size(0), self.encoder_hidden_size).to(opt.device))
 
         for t in range(self.T - 1):
             # (batch_size, T, (2 * decoder_hidden_size + encoder_hidden_size))
@@ -115,3 +110,14 @@ class Decoder(nn.Module):
 
         # Eqn. 22: final output
         return self.fc_final(torch.cat((hidden[0], context), dim=1))
+
+
+
+'''
+def init_hidden(x, hidden_size: int):
+    """
+    Train the initial value of the hidden state:
+    https://r2rt.com/non-zero-initial-states-for-recurrent-neural-networks.html
+    """
+    return Variable(torch.zeros(1, x.size(0), hidden_size).to(device))
+'''
