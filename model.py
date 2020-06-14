@@ -19,7 +19,7 @@ class Encoder(nn.Module):
 
     def __init__(self, input_size: int, hidden_size: int, T: int):
         """
-        input size: number of underlying factors (81)
+        input size: number of underlying factors (43)
         T: number of time steps (10)
         hidden_size: dimension of the hidden state
         """
