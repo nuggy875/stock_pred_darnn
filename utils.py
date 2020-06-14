@@ -7,12 +7,12 @@ import matplotlib.pyplot as plt
 
 
 def prep_train_data(batch_idx: np.ndarray, t_cfg: TrainConfig, train_data: TrainData):
-    feats = np.zeros((len(batch_idx), t_cfg.T - 1, train_data.feats.shape[1]))          # 1~10 KOSPI 외의 데이터 (43)
-    y_history = np.zeros((len(batch_idx), t_cfg.T - 1, train_data.targs.shape[1]))      # 1~10 data (학습)
+    feats = np.zeros((len(batch_idx), t_cfg.T, train_data.feats.shape[1]))          # 1~10 KOSPI 외의 데이터 (43)
+    y_history = np.zeros((len(batch_idx), t_cfg.T, train_data.targs.shape[1]))      # 1~10 data (학습)
     y_target = train_data.targs[batch_idx + t_cfg.T]                                    # 11번째 data (결과값)
 
     for b_i, b_idx in enumerate(batch_idx):
-        b_slc = slice(b_idx, b_idx + t_cfg.T - 1)
+        b_slc = slice(b_idx, b_idx + t_cfg.T)
         feats[b_i, :, :] = train_data.feats[b_slc, :]
         y_history[b_i, :] = train_data.targs[b_slc]
 

@@ -9,6 +9,7 @@ parser=argparse.ArgumentParser()
 
 parser.add_argument('--data_path', type=str, default='data/')
 parser.add_argument('--dataset', type=str, default='data_NAX')
+parser.add_argument('--data_mode', type=str, default='standardized', help='price, standardized')
 
 parser.add_argument('--bs', type=int, default=128, help='batch size')
 parser.add_argument('--ehs', type=int, default=64, help='dimension of Encoder hidden state')

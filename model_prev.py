@@ -19,25 +19,25 @@ class Encoder(nn.Module):
         self.T = T
 
         self.lstm_layer = nn.LSTM(input_size=input_size, hidden_size=hidden_size, num_layers=1)
-        self.attn_linear = nn.Linear(in_features=2 * hidden_size + T, out_features=1)
+        self.attn_linear = nn.Linear(in_features=2 * hidden_size + T - 1, out_features=1)
 
     def forward(self, input_data):
-        # input_data: (batch_size, T, input_size)
-        input_weighted = Variable(torch.zeros(input_data.size(0), self.T, self.input_size).to(opt.device))
-        input_encoded = Variable(torch.zeros(input_data.size(0), self.T, self.hidden_size).to(opt.device))
+        # input_data: (batch_size, T - 1, input_size)
+        input_weighted = Variable(torch.zeros(input_data.size(0), self.T - 1, self.input_size).to(opt.device))
+        input_encoded = Variable(torch.zeros(input_data.size(0), self.T - 1, self.hidden_size).to(opt.device))
         # hidden, cell: initial states with dimension hidden_size
         # hidden = init_hidden(input_data, self.hidden_size)  # 1 * batch_size * hidden_size
         # cell = init_hidden(input_data, self.hidden_size)
         hidden = Variable(torch.zeros(1, input_data.size(0), self.hidden_size).to(opt.device))
         cell = Variable(torch.zeros(1, input_data.size(0), self.hidden_size).to(opt.device))
 
-        for t in range(self.T):
+        for t in range(self.T - 1):
             # Eqn. 8: concatenate the hidden states with each predictor
             x = torch.cat((hidden.repeat(self.input_size, 1, 1).permute(1, 0, 2),
                            cell.repeat(self.input_size, 1, 1).permute(1, 0, 2),
-                           input_data.permute(0, 2, 1)), dim=2)  # batch_size * input_size * (2*hidden_size + T)
+                           input_data.permute(0, 2, 1)), dim=2)  # batch_size * input_size * (2*hidden_size + T - 1)
             # Eqn. 8: Get attention weights
-            x = self.attn_linear(x.view(-1, self.hidden_size * 2 + self.T))  # (batch_size * input_size) * 1
+            x = self.attn_linear(x.view(-1, self.hidden_size * 2 + self.T - 1))  # (batch_size * input_size) * 1
             # Eqn. 9: Softmax the attention weights
             attn_weights = tf.softmax(x.view(-1, self.input_size), dim=1)  # (batch_size, input_size)
             # Eqn. 10: LSTM
@@ -75,8 +75,8 @@ class Decoder(nn.Module):
         self.fc.weight.data.normal_()
 
     def forward(self, input_encoded, y_history):
-        # input_encoded: (batch_size, T, encoder_hidden_size)
-        # y_history: (batch_size, (T))
+        # input_encoded: (batch_size, T - 1, encoder_hidden_size)
+        # y_history: (batch_size, (T-1))
         # Initialize hidden and cell, (1, batch_size, decoder_hidden_size)
         # hidden = init_hidden(input_encoded, self.decoder_hidden_size)
         # cell = init_hidden(input_encoded, self.decoder_hidden_size)
@@ -85,17 +85,17 @@ class Decoder(nn.Module):
         cell = Variable(torch.zeros(1, input_encoded.size(0), self.decoder_hidden_size).to(opt.device))
         context = Variable(torch.zeros(input_encoded.size(0), self.encoder_hidden_size).to(opt.device))
 
-        for t in range(self.T):
+        for t in range(self.T - 1):
             # (batch_size, T, (2 * decoder_hidden_size + encoder_hidden_size))
-            x = torch.cat((hidden.repeat(self.T, 1, 1).permute(1, 0, 2),
-                           cell.repeat(self.T, 1, 1).permute(1, 0, 2),
+            x = torch.cat((hidden.repeat(self.T - 1, 1, 1).permute(1, 0, 2),
+                           cell.repeat(self.T - 1, 1, 1).permute(1, 0, 2),
                            input_encoded), dim=2)
             # Eqn. 12 & 13: softmax on the computed attention weights
             x = tf.softmax(
                     self.attn_layer(
                         x.view(-1, 2 * self.decoder_hidden_size + self.encoder_hidden_size)
-                    ).view(-1, self.T),
-                    dim=1)  # (batch_size, T)
+                    ).view(-1, self.T - 1),
+                    dim=1)  # (batch_size, T - 1)
 
             # Eqn. 14: compute context vector
             context = torch.bmm(x.unsqueeze(1), input_encoded)[:, 0, :]  # (batch_size, encoder_hidden_size)
@@ -110,3 +110,14 @@ class Decoder(nn.Module):
 
         # Eqn. 22: final output
         return self.fc_final(torch.cat((hidden[0], context), dim=1))
+
+
+
+'''
+def init_hidden(x, hidden_size: int):
+    """
+    Train the initial value of the hidden state:
+    https://r2rt.com/non-zero-initial-states-for-recurrent-neural-networks.html
+    """
+    return Variable(torch.zeros(1, x.size(0), hidden_size).to(device))
+'''

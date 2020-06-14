@@ -37,14 +37,14 @@ def test(t_net: DaRnnNet, t_dat: TrainData, train_size: int, batch_size: int, T:
         y_slc = slice(y_i, y_i + batch_size)
         batch_idx = range(len(y_pred))[y_slc]
         b_len = len(batch_idx)
-        X = np.zeros((b_len, T - 1, t_dat.feats.shape[1]))
-        y_history = np.zeros((b_len, T - 1, t_dat.targs.shape[1]))
+        X = np.zeros((b_len, T, t_dat.feats.shape[1]))                      # T-1 to T
+        y_history = np.zeros((b_len, T, t_dat.targs.shape[1]))              # T-1 to T
 
         for b_i, b_idx in enumerate(batch_idx):
             if on_train:
-                idx = range(b_idx, b_idx + T - 1)
+                idx = range(b_idx, b_idx + T)                               # T-1 to T
             else:
-                idx = range(b_idx + train_size - T, b_idx + train_size - 1)
+                idx = range(b_idx + train_size - T, b_idx + train_size)     # train_size-1 to train_Size
 
             X[b_i, :, :] = t_dat.feats[idx, :]
             y_history[b_i, :] = t_dat.targs[idx]
@@ -58,10 +58,17 @@ def test(t_net: DaRnnNet, t_dat: TrainData, train_size: int, batch_size: int, T:
 
 def train():
     # ====== Read Data ======
-    raw_data = pd.read_csv(os.path.join(opt.data_path, opt.dataset+'.csv'), index_col='Date')
+    data_path = os.path.join(opt.data_path, opt.dataset+'.csv')
+    raw_data = pd.read_csv(data_path, index_col='Date')
     targ_cols = ("KOSPI200",)                           # target Column
-    scale = StandardScaler().fit(raw_data)              # Data Scaling
-    proc_dat = scale.transform(raw_data)
+
+    if opt.data_mode == 'price':
+        proc_dat = raw_data.to_numpy()
+        scale = None
+    elif opt.data_mode == 'standardized':
+        scale = StandardScaler().fit(raw_data)              # Data Scaling
+        proc_dat = scale.transform(raw_data)
+
     mask = np.ones(proc_dat.shape[1], dtype=bool)
     dat_cols = list(raw_data.columns)
     for col_name in targ_cols:
@@ -134,14 +141,13 @@ def train():
             y_train_pred = test(net, train_data,
                                     config.train_size, config.batch_size, config.T,
                                     on_train=True)
-            
+            # len(train_data): 2867
+            # len(y_pred_train): 1997
+            # len(y_pred_test): 861
             plt.figure()
-            plt.plot(range(1, 1 + len(train_data.targs)), train_data.targs,
-                    label="True")
-            plt.plot(range(config.T, len(y_train_pred) + config.T), y_train_pred,
-                    label='Predicted - Train')
-            plt.plot(range(config.T + len(y_train_pred), len(train_data.targs) + 1), y_test_pred,
-                    label='Predicted - Test')
+            plt.plot(range(1, 1 + len(train_data.targs)), train_data.targs, label="Ground Truth")                           # 1 ~ 2867
+            plt.plot(range(config.T + 1, len(y_train_pred) + config.T + 1), y_train_pred, label='Predicted - Train')        # 11 ~ 2007
+            plt.plot(range(config.T + len(y_train_pred), len(train_data.targs) + 1), y_test_pred, label='Predicted - Test') # 2008 ~ 2868
             plt.legend(loc='upper left')
             plt.savefig(os.path.join(os.path.dirname(__file__), "plots", "pred_{}.png".format(e_i)))
 
@@ -161,8 +167,8 @@ def train():
     plt.plot(train_data.targs[config.train_size:], label="True")
     plt.legend(loc='upper left')
     plt.savefig(os.path.join(os.path.dirname(__file__), "plots", "final_predicted.png"))
-
-    joblib.dump(scaler, os.path.join("saves", "scaler.pkl"))
+    if opt.data_mode=='standardized':
+        joblib.dump(scaler, os.path.join("saves", "scaler.pkl"))
     torch.save(net.encoder.state_dict(), os.path.join("saves", "encoder.torch"))
     torch.save(net.decoder.state_dict(), os.path.join("saves", "decoder.torch"))
     
