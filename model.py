@@ -26,8 +26,6 @@ class Encoder(nn.Module):
         input_weighted = Variable(torch.zeros(input_data.size(0), self.T, self.input_size).to(opt.device))
         input_encoded = Variable(torch.zeros(input_data.size(0), self.T, self.hidden_size).to(opt.device))
         # hidden, cell: initial states with dimension hidden_size
-        # hidden = init_hidden(input_data, self.hidden_size)  # 1 * batch_size * hidden_size
-        # cell = init_hidden(input_data, self.hidden_size)
         hidden = Variable(torch.zeros(1, input_data.size(0), self.hidden_size).to(opt.device))
         cell = Variable(torch.zeros(1, input_data.size(0), self.hidden_size).to(opt.device))
 
@@ -73,6 +71,7 @@ class Decoder(nn.Module):
         self.fc_final = nn.Linear(decoder_hidden_size + encoder_hidden_size, out_feats)
 
         self.fc.weight.data.normal_()
+        self.sigmoid = nn.Sigmoid()
 
     def forward(self, input_encoded, y_history):
         # input_encoded: (batch_size, T, encoder_hidden_size)
@@ -109,4 +108,7 @@ class Decoder(nn.Module):
             cell = lstm_output[1]  # 1 * batch_size * decoder_hidden_size
 
         # Eqn. 22: final output
-        return self.fc_final(torch.cat((hidden[0], context), dim=1))
+        if opt.bin:
+            return self.sigmoid(self.fc_final(torch.cat((hidden[0], context), dim=1)))
+        else:
+            return self.fc_final(torch.cat((hidden[0], context), dim=1))

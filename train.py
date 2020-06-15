@@ -60,18 +60,18 @@ def train():
     # ====== Read Data ======
     data_path = os.path.join(opt.data_path, opt.dataset+'.csv')
     raw_data = pd.read_csv(data_path, index_col='Date')
-    targ_cols = ("KOSPI200",)                           # target Column
+    targ_cols = ("KOSPI200",)                               # target Column
 
     if opt.data_mode == 'price':
         proc_dat = raw_data.to_numpy()
         scale = None
-    elif opt.data_mode == 'standardized':
-        scale = StandardScaler().fit(raw_data)              # Data Scaling
+    elif opt.data_mode == 'standardized':                   # Data Scaling
+        scale = StandardScaler().fit(raw_data)
         proc_dat = scale.transform(raw_data)
-
-    elif opt.data_mode == 'return':
-        proc_dat = raw_data.to_numpy()
-
+    elif opt.data_mode == 'return':                         # Data 수익률
+        proc_dat = get_return_data(raw_data.to_numpy())
+        scale = None
+        opt.bin = True
 
     mask = np.ones(proc_dat.shape[1], dtype=bool)
     dat_cols = list(raw_data.columns)
@@ -88,7 +88,11 @@ def train():
     learning_rate = opt.lr
     batch_size=opt.bs
 
-    criterion = nn.MSELoss()
+    if opt.bin:
+        criterion = nn.BCELoss().to(opt.device)
+    else:
+        criterion = nn.MSELoss().to(opt.device)
+
     train_size = int(train_data.feats.shape[0] * 0.7)
     config = TrainConfig(T, train_size, batch_size, criterion)
     print("Training Size : {}".format(config.train_size))
