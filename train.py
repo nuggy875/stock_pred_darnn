@@ -71,7 +71,7 @@ def train():
     elif opt.data_mode == 'return':                         # Data 수익률
         proc_dat = get_return_data(raw_data.to_numpy())
         scale = None
-        opt.bin = True
+        # opt.bin = True
 
     mask = np.ones(proc_dat.shape[1], dtype=bool)
     dat_cols = list(raw_data.columns)
@@ -120,7 +120,7 @@ def train():
 
         for t_i in range(0, config.train_size, config.batch_size):
             batch_idx = perm_idx[t_i:(t_i + config.batch_size)]
-            X, y_history, y_target = prep_train_data(batch_idx, config, train_data)
+            X, y_history, y_target = prep_train_data(batch_idx, config, train_data, )
 
             net.enc_opt.zero_grad()
             net.dec_opt.zero_grad()

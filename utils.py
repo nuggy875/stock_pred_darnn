@@ -33,11 +33,13 @@ def prep_train_data(batch_idx: np.ndarray, t_cfg: TrainConfig, train_data: Train
     y_history = np.zeros((len(batch_idx), t_cfg.T, train_data.targs.shape[1]))      # 1~10 data (학습)
     y_target = train_data.targs[batch_idx + t_cfg.T]                                # 11번째 data (결과값)
 
+    
     if opt.bin:
         y_target_bin = np.ones(y_target.shape,dtype=float)
         for i, value in enumerate(y_target):
             y_target_bin[i, :] = binary_result(value[0])
         y_target = y_target_bin
+    
 
     for b_i, b_idx in enumerate(batch_idx):
         b_slc = slice(b_idx, b_idx + t_cfg.T)
