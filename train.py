@@ -69,6 +69,10 @@ def train():
         scale = StandardScaler().fit(raw_data)              # Data Scaling
         proc_dat = scale.transform(raw_data)
 
+    elif opt.data_mode == 'return':
+        proc_dat = raw_data.to_numpy()
+
+
     mask = np.ones(proc_dat.shape[1], dtype=bool)
     dat_cols = list(raw_data.columns)
     for col_name in targ_cols:
@@ -133,7 +137,7 @@ def train():
 
         epoch_losses[e_i] = np.mean(iter_losses[range(e_i * iter_per_epoch, (e_i + 1) * iter_per_epoch)])
         
-        if e_i % 10 == 0:
+        if e_i % 100 == 0:
             y_test_pred = test(net, train_data, config.train_size, config.batch_size, config.T, on_train=False)
             # TODO: make this MSE and make it work for multiple inputs
             val_loss = y_test_pred - train_data.targs[config.train_size:]
