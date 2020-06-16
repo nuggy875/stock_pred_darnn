@@ -15,7 +15,7 @@ parser.add_argument('--ehs', type=int, default=64, help='dimension of Encoder hi
 parser.add_argument('--dhs', type=int, default=64, help='dimension of Decoder hidden state')
 parser.add_argument('--t', type=int, default=10, help='number of time steps')
 parser.add_argument('--lr', type=float, default=0.01, help='learning rate')
-parser.add_argument('--epoch', type=int, default=1000, help='Epoch')
+parser.add_argument('--epoch', type=int, default=2000, help='Epoch')
 
 parser.add_argument('--test', dest='test', action='store_true')
 parser.set_defaults(test=False)

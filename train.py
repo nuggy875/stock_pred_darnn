@@ -62,7 +62,7 @@ def train():
     raw_data = pd.read_csv(data_path, index_col='Date')
     targ_cols = ("KOSPI200",)                               # target Column
 
-    if opt.data_mode == 'price':
+    if opt.data_mode == 'price':                            # Price
         proc_dat = raw_data.to_numpy()
         scale = None
     elif opt.data_mode == 'standardized':                   # Data Scaling
@@ -120,7 +120,7 @@ def train():
 
         for t_i in range(0, config.train_size, config.batch_size):
             batch_idx = perm_idx[t_i:(t_i + config.batch_size)]
-            X, y_history, y_target = prep_train_data(batch_idx, config, train_data, )
+            X, y_history, y_target = prep_train_data(batch_idx, config, train_data)
 
             net.enc_opt.zero_grad()
             net.dec_opt.zero_grad()
@@ -152,6 +152,64 @@ def train():
             # len(train_data): 2867
             # len(y_pred_train): 1997
             # len(y_pred_test): 861
+
+            # compare train [10] ~ [2006]
+            # compare test [2007] ~ [2866] + [2867]
+            train_slc = slice(T, config.train_size+1)
+            test_slc = slice(config.train_size+1, len(train_data.targs))
+            gt_train = train_data.targs[train_slc]
+            gt_test = train_data.targs[test_slc]
+
+            train_pos_score = 0
+            train_neg_score = 0
+            train_pos_total = 0
+            train_neg_total = 0
+            for i, val in enumerate(gt_train):
+                if val[0]>=0:
+                    train_pos_total += 1
+                    if y_train_pred[i][0]>=0:
+                        train_pos_score += 1
+                else:
+                    train_neg_total += 1
+                    if y_train_pred[i][0]<0:
+                        train_neg_score += 1
+            
+            train_result_pos = train_pos_score / train_pos_total
+            train_result_neg = train_neg_score / train_neg_total
+            train_result_total = (train_pos_score + train_neg_score) / (train_pos_total + train_neg_total)
+
+            test_pos_score = 0
+            test_neg_score = 0
+            test_pos_total = 0
+            test_neg_total = 0
+            for i, val in enumerate(gt_test):
+                if val[0]>=0:
+                    test_pos_total += 1
+                    if y_test_pred[i][0]>=0:
+                        test_pos_score += 1
+                else:
+                    test_neg_total += 1
+                    if y_test_pred[i][0]<0:
+                        test_neg_score += 1
+
+            test_result_pos = test_pos_score / test_pos_total
+            test_result_neg = test_neg_score / test_neg_total
+            test_result_total = (test_pos_score + test_neg_score) / (test_pos_total + test_neg_total)
+            
+            f = open(os.path.join("saves", "score.txt"), "a")
+            f.write("====== EPOCH:{} ======\n".format(e_i))
+            f.write(">> Train\n")
+            f.write("Positive Score: {}\n".format(train_result_pos))
+            f.write("Negative Score: {}\n".format(train_result_neg))
+            f.write("Total Score: {}\n".format(train_result_total))
+
+            f.write(">> Test\n")
+            f.write("Positive Score: {}\n".format(test_result_pos))
+            f.write("Negative Score: {}\n".format(test_result_neg))
+            f.write("Total Score: {}\n\n".format(test_result_total))
+            f.close()
+
+                
             plt.figure()
             plt.plot(range(1, 1 + len(train_data.targs)), train_data.targs, label="Ground Truth")                           # 1 ~ 2867
             plt.plot(range(config.T + 1, len(y_train_pred) + config.T + 1), y_train_pred, label='Predicted - Train')        # 11 ~ 2007
