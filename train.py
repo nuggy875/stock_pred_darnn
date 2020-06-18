@@ -27,24 +27,29 @@ def save_json(kwargs: str, filename:str):
 
 
 def test(t_net: DaRnnNet, t_dat: TrainData, train_size: int, batch_size: int, T: int, on_train=False):
-    out_size = t_dat.targs.shape[1]
+    out_size = t_dat.targs.shape[1]     # 1
     if on_train:
-        y_pred = np.zeros((train_size - T + 1, out_size))
+        # for train data
+        y_pred = np.zeros((train_size - T + 1, out_size))                       # 1997, 1
     else:
-        y_pred = np.zeros((t_dat.feats.shape[0] - train_size, out_size))
+        # for test data
+        y_pred = np.zeros((t_dat.feats.shape[0] - train_size, out_size))    # 861, 1
 
     for y_i in range(0, len(y_pred), batch_size):
+        # 128 개의 batch에 대해
         y_slc = slice(y_i, y_i + batch_size)
         batch_idx = range(len(y_pred))[y_slc]
         b_len = len(batch_idx)
-        X = np.zeros((b_len, T, t_dat.feats.shape[1]))                      # T-1 to T
-        y_history = np.zeros((b_len, T, t_dat.targs.shape[1]))              # T-1 to T
+
+        X = np.zeros((b_len, T, t_dat.feats.shape[1]))                      # (128, 10, 43)
+        y_history = np.zeros((b_len, T, t_dat.targs.shape[1]))              # (128, 10, 1)
 
         for b_i, b_idx in enumerate(batch_idx):
+            # 각 input에 대해
             if on_train:
                 idx = range(b_idx, b_idx + T)                               # T-1 to T
             else:
-                idx = range(b_idx + train_size - T, b_idx + train_size)     # train_size-1 to train_Size
+                idx = range(b_idx + train_size - T + 1, b_idx + train_size + 1)     # train_size-1 to train_Size
 
             X[b_i, :, :] = t_dat.feats[idx, :]
             y_history[b_i, :] = t_dat.targs[idx]
@@ -52,50 +57,56 @@ def test(t_net: DaRnnNet, t_dat: TrainData, train_size: int, batch_size: int, T:
         y_history = numpy_to_tvar(y_history)
         _, input_encoded = t_net.encoder(numpy_to_tvar(X))
         y_pred[y_slc] = t_net.decoder(input_encoded, y_history).cpu().data.numpy()
-
+    
     return y_pred
 
 
 def train():
+    encoder_hidden_size = opt.ehs
+    decoder_hidden_size = opt.dhs
+    T = opt.t
+    Q = opt.q
+    learning_rate = opt.lr
+    batch_size=opt.bs
+
+
     # ====== Read Data ======
     data_path = os.path.join(opt.data_path, opt.dataset+'.csv')
     raw_data = pd.read_csv(data_path, index_col='Date')
     targ_cols = ("KOSPI200",)                               # target Column
 
     if opt.data_mode == 'price':                            # Price
-        proc_dat = raw_data.to_numpy()
-        scale = None
+        input_dat = raw_data.to_numpy()
     elif opt.data_mode == 'standardized':                   # Data Scaling
-        scale = StandardScaler().fit(raw_data)
-        proc_dat = scale.transform(raw_data)
+        scaler = StandardScaler().fit(raw_data)
+        input_dat = scaler.transform(raw_data)
     elif opt.data_mode == 'return':                         # Data 수익률
-        proc_dat = get_return_data(raw_data.to_numpy())
-        scale = None
-        # opt.bin = True
-
-    mask = np.ones(proc_dat.shape[1], dtype=bool)
+        price_dat = raw_data.to_numpy()         # Data Price
+        input_dat = get_return_data(price_dat)  # Data Return
+        trend_dat = get_trend_data(price_dat, Q)
+    
+    mask = np.ones(input_dat.shape[1], dtype=bool)
     dat_cols = list(raw_data.columns)
     for col_name in targ_cols:
         mask[dat_cols.index(col_name)] = False
-    feats = proc_dat[:, mask]
-    targs = proc_dat[:, ~mask]
-    train_data, scaler = [TrainData(feats, targs), scale]
+    feats = input_dat[:, mask]
+    targs = input_dat[:, ~mask]
+    train_data = TrainData(feats, targs)
+    train_size = int(train_data.feats.shape[0] * 0.7)
+    print('Input Data Length :{}'.format(len(input_dat)))
+    print('Feature : {}'.format(feats.shape[1]))
+    print("Training Size (70%) : {}".format(train_size))
 
-    # ====== hyperparameter ======
-    encoder_hidden_size = opt.ehs
-    decoder_hidden_size = opt.dhs
-    T = opt.t
-    learning_rate = opt.lr
-    batch_size=opt.bs
-
+    # ====== LOSS ======
     if opt.bin:
         criterion = nn.BCELoss().to(opt.device)
     else:
         criterion = nn.MSELoss().to(opt.device)
 
-    train_size = int(train_data.feats.shape[0] * 0.7)
-    config = TrainConfig(T, train_size, batch_size, criterion)
-    print("Training Size : {}".format(config.train_size))
+    # ====== Config ======
+    config = TrainConfig(T, Q, train_size, batch_size, criterion)
+
+    # ====== define Network ======
     net_kwargs = {"batch_size": batch_size, "T": T}
     enc_kwargs = {"input_size": train_data.feats.shape[1], "hidden_size": encoder_hidden_size, "T": T}
     dec_kwargs = {"encoder_hidden_size": encoder_hidden_size, "decoder_hidden_size": decoder_hidden_size, "T": T, "out_feats": len(targ_cols)}
@@ -107,29 +118,33 @@ def train():
     encoder_optimizer = optim.Adam(params=[p for p in encoder.parameters() if p.requires_grad], lr=learning_rate)
     decoder_optimizer = optim.Adam(params=[p for p in decoder.parameters() if p.requires_grad], lr=learning_rate)
 
-    net = DaRnnNet(encoder, decoder, encoder_optimizer, decoder_optimizer)
+    net = DaRnnNet(encoder, decoder, encoder_optimizer, decoder_optimizer)                  # DaRNN Network
 
+    # ====== TRAIN ======
     iter_per_epoch = int(np.ceil(config.train_size * 1. / config.batch_size))
     print('iter_per_epoch:{}'.format(iter_per_epoch))
+
     iter_losses = np.zeros(opt.epoch * iter_per_epoch)
     epoch_losses = np.zeros(opt.epoch)
     n_iter = 0
     for e_i in range(opt.epoch):
         print("Epoch:{})".format(e_i))
         perm_idx = np.random.permutation(config.train_size - config.T)
-
-        for t_i in range(0, config.train_size, config.batch_size):
+        for t_i in range(0, config.train_size, config.batch_size):                          # train_size = 2006
             batch_idx = perm_idx[t_i:(t_i + config.batch_size)]
-            X, y_history, y_target = prep_train_data(batch_idx, config, train_data)
+            X, y_history, y_trend = prep_train_data(batch_idx, config, train_data, trend_dat)         # get Data
+            y_true = numpy_to_tvar(y_trend).unsqueeze(1)
 
             net.enc_opt.zero_grad()
             net.dec_opt.zero_grad()
-
-            input_weighted, input_encoded = net.encoder(numpy_to_tvar(X))
-            y_pred = net.decoder(input_encoded, numpy_to_tvar(y_history))
-            y_true = numpy_to_tvar(y_target)
-            loss = config.loss_func(y_pred, y_true)
+            
+            # Prediction using Attention (DaRNN)
+            input_weighted, input_encoded = net.encoder(numpy_to_tvar(X))                   # Encoder
+            y_pred = net.decoder(input_encoded, numpy_to_tvar(y_history))                   # Decoder
+            
+            loss = config.loss_func(y_pred, y_true)                                        # 현 시점에서 Q(=19)일 후를 예측
             loss.backward()
+
             net.enc_opt.step()
             net.dec_opt.step()
 
@@ -141,31 +156,28 @@ def train():
 
         epoch_losses[e_i] = np.mean(iter_losses[range(e_i * iter_per_epoch, (e_i + 1) * iter_per_epoch)])
         
-        if e_i % 100 == 0:
+        # 100 epoch 마다 Testing
+        if e_i % opt.testing_epoch == 0:
+            
+            # ===== 테스팅 Testing Data =====
             y_test_pred = test(net, train_data, config.train_size, config.batch_size, config.T, on_train=False)
             # TODO: make this MSE and make it work for multiple inputs
-            val_loss = y_test_pred - train_data.targs[config.train_size:]
-            print("Epoch {}, train Loss:{}, val Loss:{}".format(e_i, epoch_losses[e_i], np.mean(np.abs(val_loss))))
-            y_train_pred = test(net, train_data,
-                                    config.train_size, config.batch_size, config.T,
-                                    on_train=True)
-            # len(train_data): 2867
-            # len(y_pred_train): 1997
-            # len(y_pred_test): 861
+            test_loss = y_test_pred[:-Q] - train_data.targs[config.train_size+Q:]
+            
+            print("Epoch {}, train Loss:{}, test Loss:{}".format(e_i, epoch_losses[e_i], np.mean(np.abs(test_loss))))
 
-            # compare train [10] ~ [2006]
-            # compare test [2007] ~ [2866] + [2867]
-            train_slc = slice(T, config.train_size+1)
-            test_slc = slice(config.train_size+1, len(train_data.targs))
-            gt_train = train_data.targs[train_slc]
-            gt_test = train_data.targs[test_slc]
+            # ===== 테스팅 Trainind Data =====
+            y_train_pred = test(net, train_data, config.train_size, config.batch_size, config.T, on_train=True)
 
+
+            # Training Result
+            trend_gt_train = trend_dat[T-1:train_size]
             train_pos_score = 0
             train_neg_score = 0
             train_pos_total = 0
             train_neg_total = 0
-            for i, val in enumerate(gt_train):
-                if val[0]>=0:
+            for i, val in enumerate(trend_gt_train):
+                if val>=0:
                     train_pos_total += 1
                     if y_train_pred[i][0]>=0:
                         train_pos_score += 1
@@ -173,17 +185,20 @@ def train():
                     train_neg_total += 1
                     if y_train_pred[i][0]<0:
                         train_neg_score += 1
-            
+
             train_result_pos = train_pos_score / train_pos_total
             train_result_neg = train_neg_score / train_neg_total
             train_result_total = (train_pos_score + train_neg_score) / (train_pos_total + train_neg_total)
 
+            # Testing Result
+            trend_gt_test = trend_dat[train_size:]
             test_pos_score = 0
             test_neg_score = 0
             test_pos_total = 0
             test_neg_total = 0
-            for i, val in enumerate(gt_test):
-                if val[0]>=0:
+
+            for i, val in enumerate(trend_gt_test):
+                if val>=0:
                     test_pos_total += 1
                     if y_test_pred[i][0]>=0:
                         test_pos_score += 1
@@ -195,27 +210,36 @@ def train():
             test_result_pos = test_pos_score / test_pos_total
             test_result_neg = test_neg_score / test_neg_total
             test_result_total = (test_pos_score + test_neg_score) / (test_pos_total + test_neg_total)
-            
+
             f = open(os.path.join("saves", "score.txt"), "a")
             f.write("====== EPOCH:{} ======\n".format(e_i))
             f.write(">> Train\n")
             f.write("Positive Score: {}\n".format(train_result_pos))
             f.write("Negative Score: {}\n".format(train_result_neg))
             f.write("Total Score: {}\n".format(train_result_total))
-
+            
             f.write(">> Test\n")
             f.write("Positive Score: {}\n".format(test_result_pos))
             f.write("Negative Score: {}\n".format(test_result_neg))
             f.write("Total Score: {}\n\n".format(test_result_total))
+            
             f.close()
 
-                
             plt.figure()
-            plt.plot(range(1, 1 + len(train_data.targs)), train_data.targs, label="Ground Truth")                           # 1 ~ 2867
+            plt.plot(range(1, 1 + len(trend_dat)), trend_dat.reshape(trend_dat.size, 1), label="Ground Truth Trend")                     # 1 ~ 2848
+            plt.plot(range(config.T - 1, len(y_train_pred) + config.T - 1), y_train_pred, label='Predicted - Train')        # 9 ~ 2005
+            plt.plot(range(len(y_train_pred) + config.T - 1, len(train_data.targs)), y_test_pred, label='Predicted - Test') # 2006 ~ 2867 + 19
+            plt.legend(loc='upper left')
+            plt.savefig(os.path.join(os.path.dirname(__file__), "plots", "pred_{}.png".format(e_i)))
+
+            '''
+            plt.figure()
+            plt.plot(range(1, 1 + len(train_data.targs)), train_data.targs, label="Ground Truth Trend")                     # 1 ~ 2867
             plt.plot(range(config.T + 1, len(y_train_pred) + config.T + 1), y_train_pred, label='Predicted - Train')        # 11 ~ 2007
             plt.plot(range(config.T + len(y_train_pred), len(train_data.targs) + 1), y_test_pred, label='Predicted - Test') # 2008 ~ 2868
             plt.legend(loc='upper left')
             plt.savefig(os.path.join(os.path.dirname(__file__), "plots", "pred_{}.png".format(e_i)))
+            '''
 
 
     final_y_pred = test(net, train_data, config.train_size, config.batch_size, config.T)

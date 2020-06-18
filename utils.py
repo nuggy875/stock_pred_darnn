@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 
 # 수익률 ( p[t] - p[t-1] ) / p[t] = r[t]
-def get_return_data(data: np.ndarray):
+def get_return_data(data:np.ndarray):
     return_data = np.ones(data.shape, dtype=float)
     # from 0 to 43
     for i in range(data.shape[1]):
@@ -20,6 +20,14 @@ def get_return_data(data: np.ndarray):
 
     return return_data
 
+def get_trend_data(data:np.ndarray, Q:int):
+    trend_data = np.ones(int(data.shape[0] - Q), dtype=float)
+    # Train data label
+    for i in range(trend_data.shape[0]):
+        trend_data[i] = (data[i+Q][0] - data[i][0]) / data[i][0]
+    return trend_data
+
+
 
 def binary_result(val):
     if val >= 0:
@@ -28,25 +36,26 @@ def binary_result(val):
         return 0
 
 
-def prep_train_data(batch_idx: np.ndarray, t_cfg: TrainConfig, train_data: TrainData):
-    feats = np.zeros((len(batch_idx), t_cfg.T, train_data.feats.shape[1]))          # 1~10 KOSPI 외의 데이터 (43)
-    y_history = np.zeros((len(batch_idx), t_cfg.T, train_data.targs.shape[1]))      # 1~10 data (학습)
-    y_target = train_data.targs[batch_idx + t_cfg.T]                                # 11번째 data (결과값)
+# Q = 19 / T = 10
+def prep_train_data(batch_idx: np.ndarray, config: TrainConfig, train_data: TrainData, y_trend):
+    feats = np.zeros((len(batch_idx), config.T, train_data.feats.shape[1]))             # 0~9 KOSPI 외의 데이터 (43)     (b, 10, 43)
+    y_history = np.zeros((len(batch_idx), config.T, train_data.targs.shape[1]))         # 0~9 data (학습)               (b, 10, 1)                 
+    y_target2 = y_trend[batch_idx+config.T]                                             # 28(9+19)번째 data (결과값)     (b, 1)
 
-    
+    '''
     if opt.bin:
         y_target_bin = np.ones(y_target.shape,dtype=float)
         for i, value in enumerate(y_target):
             y_target_bin[i, :] = binary_result(value[0])
         y_target = y_target_bin
+    '''
     
-
     for b_i, b_idx in enumerate(batch_idx):
-        b_slc = slice(b_idx, b_idx + t_cfg.T)
+        b_slc = slice(b_idx, b_idx + config.T)
         feats[b_i, :, :] = train_data.feats[b_slc, :]
         y_history[b_i, :] = train_data.targs[b_slc]
 
-    return feats, y_history, y_target
+    return feats, y_history, y_target2
 
 
 def adjust_learning_rate(net: DaRnnNet):
