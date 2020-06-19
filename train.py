@@ -83,7 +83,7 @@ def train():
     elif opt.data_mode == 'return':                         # Data 수익률
         price_dat = raw_data.to_numpy()         # Data Price
         input_dat = get_return_data(price_dat)  # Data Return
-        trend_dat = get_trend_data(price_dat, Q)
+        trend_dat, trend_dat_bin = get_trend_data(price_dat, Q)
     
     mask = np.ones(input_dat.shape[1], dtype=bool)
     dat_cols = list(raw_data.columns)
@@ -161,78 +161,34 @@ def train():
             
             # ===== 테스팅 Testing Data =====
             y_test_pred = test(net, train_data, config.train_size, config.batch_size, config.T, on_train=False)
-            # TODO: make this MSE and make it work for multiple inputs
             test_loss = y_test_pred[:-Q] - train_data.targs[config.train_size+Q:]
             
             print("Epoch {}, train Loss:{}, test Loss:{}".format(e_i, epoch_losses[e_i], np.mean(np.abs(test_loss))))
 
             # ===== 테스팅 Trainind Data =====
             y_train_pred = test(net, train_data, config.train_size, config.batch_size, config.T, on_train=True)
-
-
-            # Training Result
-            trend_gt_train = trend_dat[T-1:train_size]
-            train_pos_score = 0
-            train_neg_score = 0
-            train_pos_total = 0
-            train_neg_total = 0
-            for i, val in enumerate(trend_gt_train):
-                if val>=0:
-                    train_pos_total += 1
-                    if y_train_pred[i][0]>=0:
-                        train_pos_score += 1
-                else:
-                    train_neg_total += 1
-                    if y_train_pred[i][0]<0:
-                        train_neg_score += 1
-
-            train_result_pos = train_pos_score / train_pos_total
-            train_result_neg = train_neg_score / train_neg_total
-            train_result_total = (train_pos_score + train_neg_score) / (train_pos_total + train_neg_total)
-
-            # Testing Result
-            trend_gt_test = trend_dat[train_size:]
-            test_pos_score = 0
-            test_neg_score = 0
-            test_pos_total = 0
-            test_neg_total = 0
-
-            for i, val in enumerate(trend_gt_test):
-                if val>=0:
-                    test_pos_total += 1
-                    if y_test_pred[i][0]>=0:
-                        test_pos_score += 1
-                else:
-                    test_neg_total += 1
-                    if y_test_pred[i][0]<0:
-                        test_neg_score += 1
-
-            test_result_pos = test_pos_score / test_pos_total
-            test_result_neg = test_neg_score / test_neg_total
-            test_result_total = (test_pos_score + test_neg_score) / (test_pos_total + test_neg_total)
-
-            f = open(os.path.join("saves", "score.txt"), "a")
-            f.write("====== EPOCH:{} ======\n".format(e_i))
-            f.write(">> Train\n")
-            f.write("Positive Score: {}\n".format(train_result_pos))
-            f.write("Negative Score: {}\n".format(train_result_neg))
-            f.write("Total Score: {}\n".format(train_result_total))
             
-            f.write(">> Test\n")
-            f.write("Positive Score: {}\n".format(test_result_pos))
-            f.write("Negative Score: {}\n".format(test_result_neg))
-            f.write("Total Score: {}\n\n".format(test_result_total))
-            
-            f.close()
+            # get Result
+            if opt.bin:
+                get_result_bin(trend_dat_bin, y_train_pred, y_test_pred, T, train_size, e_i)
+                plt.figure()
+                plt.plot(range(1, 1 + len(trend_dat_bin)), trend_dat_bin.reshape(trend_dat_bin.size, 1), label="Ground Truth Trend")                     # 1 ~ 2848
+                plt.plot(range(config.T - 1, len(y_train_pred) + config.T - 1), y_train_pred, label='Predicted - Train')        # 9 ~ 2005
+                plt.plot(range(len(y_train_pred) + config.T - 1, len(train_data.targs)), y_test_pred, label='Predicted - Test') # 2006 ~ 2867 + 19
+                plt.legend(loc='upper left')
+                plt.savefig(os.path.join(os.path.dirname(__file__), "plots", "pred_{}.png".format(e_i)))
+            else:
+                get_result(trend_dat, y_train_pred, y_test_pred, T, train_size, e_i)
 
-            plt.figure()
-            plt.plot(range(1, 1 + len(trend_dat)), trend_dat.reshape(trend_dat.size, 1), label="Ground Truth Trend")                     # 1 ~ 2848
-            plt.plot(range(config.T - 1, len(y_train_pred) + config.T - 1), y_train_pred, label='Predicted - Train')        # 9 ~ 2005
-            plt.plot(range(len(y_train_pred) + config.T - 1, len(train_data.targs)), y_test_pred, label='Predicted - Test') # 2006 ~ 2867 + 19
-            plt.legend(loc='upper left')
-            plt.savefig(os.path.join(os.path.dirname(__file__), "plots", "pred_{}.png".format(e_i)))
+                plt.figure()
+                plt.plot(range(1, 1 + len(trend_dat)), trend_dat.reshape(trend_dat.size, 1), label="Ground Truth Trend")                     # 1 ~ 2848
+                plt.plot(range(config.T - 1, len(y_train_pred) + config.T - 1), y_train_pred, label='Predicted - Train')        # 9 ~ 2005
+                plt.plot(range(len(y_train_pred) + config.T - 1, len(train_data.targs)), y_test_pred, label='Predicted - Test') # 2006 ~ 2867 + 19
+                plt.legend(loc='upper left')
+                plt.savefig(os.path.join(os.path.dirname(__file__), "plots", "pred_{}.png".format(e_i)))
 
             '''
+            # For Price & Standardized
             plt.figure()
             plt.plot(range(1, 1 + len(train_data.targs)), train_data.targs, label="Ground Truth Trend")                     # 1 ~ 2867
             plt.plot(range(config.T + 1, len(y_train_pred) + config.T + 1), y_train_pred, label='Predicted - Train')        # 11 ~ 2007
@@ -257,10 +213,13 @@ def train():
     plt.plot(train_data.targs[config.train_size:], label="True")
     plt.legend(loc='upper left')
     plt.savefig(os.path.join(os.path.dirname(__file__), "plots", "final_predicted.png"))
-    if opt.data_mode=='standardized':
-        joblib.dump(scaler, os.path.join("saves", "scaler.pkl"))
+    
+    # Save Model
     torch.save(net.encoder.state_dict(), os.path.join("saves", "encoder.torch"))
     torch.save(net.decoder.state_dict(), os.path.join("saves", "decoder.torch"))
+
+    if opt.data_mode=='standardized':
+        joblib.dump(scaler, os.path.join("saves", "scaler.pkl"))
     
 
 if __name__ == "__main__":
