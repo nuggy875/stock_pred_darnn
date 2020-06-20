@@ -196,27 +196,27 @@ def train():
             plt.legend(loc='upper left')
             plt.savefig(os.path.join(os.path.dirname(__file__), "plots", "pred_{}.png".format(e_i)))
             '''
+        if e_i % (opt.testing_epoch*10) == 0:
 
+            final_y_pred = test(net, train_data, config.train_size, config.batch_size, config.T)
+            
+            plt.figure()
+            plt.semilogy(range(len(iter_losses)), iter_losses)
+            plt.savefig(os.path.join(os.path.dirname(__file__), "plots", "loss_iter_{}.png".format(e_i)))
 
-    final_y_pred = test(net, train_data, config.train_size, config.batch_size, config.T)
-    
-    plt.figure()
-    plt.semilogy(range(len(iter_losses)), iter_losses)
-    plt.savefig(os.path.join(os.path.dirname(__file__), "plots", "final_loss_iter.png"))
+            plt.figure()
+            plt.semilogy(range(len(epoch_losses)), epoch_losses)
+            plt.savefig(os.path.join(os.path.dirname(__file__), "plots", "loss_epoch_{}.png".format(e_i)))
 
-    plt.figure()
-    plt.semilogy(range(len(epoch_losses)), epoch_losses)
-    plt.savefig(os.path.join(os.path.dirname(__file__), "plots", "final_loss_epoch.png"))
-
-    plt.figure()
-    plt.plot(final_y_pred, label='Predicted')
-    plt.plot(train_data.targs[config.train_size:], label="True")
-    plt.legend(loc='upper left')
-    plt.savefig(os.path.join(os.path.dirname(__file__), "plots", "final_predicted.png"))
-    
-    # Save Model
-    torch.save(net.encoder.state_dict(), os.path.join("saves", "encoder.torch"))
-    torch.save(net.decoder.state_dict(), os.path.join("saves", "decoder.torch"))
+            plt.figure()
+            plt.plot(final_y_pred, label='Predicted')
+            plt.plot(trend_dat[config.train_size-Q:].reshape(trend_dat[config.train_size-Q:].size , 1), label="True")
+            plt.legend(loc='upper left')
+            plt.savefig(os.path.join(os.path.dirname(__file__), "plots", "pred_final_{}.png".format(e_i)))
+            
+            # Save Model
+            torch.save(net.encoder.state_dict(), os.path.join("saves", "encoder_{}.torch".format(e_i)))
+            torch.save(net.decoder.state_dict(), os.path.join("saves", "decoder_{}.torch".format(e_i)))
 
     if opt.data_mode=='standardized':
         joblib.dump(scaler, os.path.join("saves", "scaler.pkl"))
