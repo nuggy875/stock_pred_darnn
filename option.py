@@ -18,7 +18,7 @@ parser.add_argument('--t', type=int, default=10, help='number of time steps')
 parser.add_argument('--q', type=int, default=19, help='predictions day from input')
 
 parser.add_argument('--lr', type=float, default=0.01, help='learning rate')
-parser.add_argument('--epoch', type=int, default=3, help='Epoch')
+parser.add_argument('--epoch', type=int, default=10000, help='Epoch')
 parser.add_argument('--testing_epoch', type=int, default=100)
 
 parser.add_argument('--test', dest='test', action='store_true')

@@ -164,7 +164,6 @@ def get_trend_data(data:np.ndarray, Q:int):
 
 
 
-
 def binary_result(val):
     if val >= 0:
         return 1
