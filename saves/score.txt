@@ -1,0 +1,10 @@
+====== EPOCH:0 ======
+>> Train
+Positive Score: 1.0
+Negative Score: 0.0
+Total Score: 0.5593390085127692
+>> Test
+Positive Score: 1.0
+Negative Score: 0.0
+Total Score: 0.5831353919239906
+
