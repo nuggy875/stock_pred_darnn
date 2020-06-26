@@ -1,0 +1,1000 @@
+====== EPOCH:0 ======
+>> Train
+Positive Score: 1.0
+Negative Score: 0.0
+Total Score: 0.5593390085127692
+>> Test
+Positive Score: 1.0
+Negative Score: 0.0
+Total Score: 0.5831353919239906
+
+====== EPOCH:100 ======
+>> Train
+Positive Score: 0.7663384064458371
+Negative Score: 0.45
+Total Score: 0.6269404106159239
+>> Test
+Positive Score: 0.6741344195519349
+Negative Score: 0.24786324786324787
+Total Score: 0.49643705463182897
+
+====== EPOCH:200 ======
+>> Train
+Positive Score: 0.9400179051029544
+Negative Score: 0.24545454545454545
+Total Score: 0.6339509263895844
+>> Test
+Positive Score: 0.8289205702647657
+Negative Score: 0.13675213675213677
+Total Score: 0.5403800475059383
+
+====== EPOCH:300 ======
+>> Train
+Positive Score: 0.855863921217547
+Negative Score: 0.7068181818181818
+Total Score: 0.7901852779168753
+>> Test
+Positive Score: 0.5458248472505092
+Negative Score: 0.36182336182336183
+Total Score: 0.4691211401425178
+
+====== EPOCH:400 ======
+>> Train
+Positive Score: 0.7797672336615935
+Negative Score: 0.24204545454545454
+Total Score: 0.542814221331998
+>> Test
+Positive Score: 0.7739307535641547
+Negative Score: 0.21082621082621084
+Total Score: 0.5391923990498813
+
+====== EPOCH:500 ======
+>> Train
+Positive Score: 0.918531781557744
+Negative Score: 0.35909090909090907
+Total Score: 0.6720080120180271
+>> Test
+Positive Score: 0.8309572301425662
+Negative Score: 0.1623931623931624
+Total Score: 0.5522565320665083
+
+====== EPOCH:600 ======
+>> Train
+Positive Score: 0.7681289167412713
+Negative Score: 0.6409090909090909
+Total Score: 0.7120681021532298
+>> Test
+Positive Score: 0.6109979633401222
+Negative Score: 0.37606837606837606
+Total Score: 0.5130641330166271
+
+====== EPOCH:700 ======
+>> Train
+Positive Score: 0.8164726947179947
+Negative Score: 0.6988636363636364
+Total Score: 0.7646469704556835
+>> Test
+Positive Score: 0.5763747454175153
+Negative Score: 0.4301994301994302
+Total Score: 0.5154394299287411
+
+====== EPOCH:800 ======
+>> Train
+Positive Score: 0.7036705461056401
+Negative Score: 0.7625
+Total Score: 0.729594391587381
+>> Test
+Positive Score: 0.5030549898167006
+Negative Score: 0.4985754985754986
+Total Score: 0.501187648456057
+
+====== EPOCH:900 ======
+>> Train
+Positive Score: 0.900626678603402
+Negative Score: 0.8238636363636364
+Total Score: 0.8668002003004507
+>> Test
+Positive Score: 0.6089613034623218
+Negative Score: 0.3475783475783476
+Total Score: 0.5
+
+====== EPOCH:1000 ======
+>> Train
+Positive Score: 0.8576544315129812
+Negative Score: 0.8125
+Total Score: 0.8377566349524287
+>> Test
+Positive Score: 0.5621181262729125
+Negative Score: 0.4415954415954416
+Total Score: 0.5118764845605701
+
+====== EPOCH:1100 ======
+>> Train
+Positive Score: 0.8773500447627574
+Negative Score: 0.8556818181818182
+Total Score: 0.8678017025538307
+>> Test
+Positive Score: 0.5193482688391039
+Negative Score: 0.48717948717948717
+Total Score: 0.505938242280285
+
+====== EPOCH:1200 ======
+>> Train
+Positive Score: 0.9042076991942704
+Negative Score: 0.865909090909091
+Total Score: 0.8873309964947421
+>> Test
+Positive Score: 0.6517311608961304
+Negative Score: 0.38461538461538464
+Total Score: 0.5403800475059383
+
+====== EPOCH:1300 ======
+>> Train
+Positive Score: 0.7188898836168308
+Negative Score: 0.5988636363636364
+Total Score: 0.6659989984977466
+>> Test
+Positive Score: 0.615071283095723
+Negative Score: 0.35327635327635326
+Total Score: 0.505938242280285
+
+====== EPOCH:1400 ======
+>> Train
+Positive Score: 0.7350044762757386
+Negative Score: 0.49318181818181817
+Total Score: 0.628442663995994
+>> Test
+Positive Score: 0.6008146639511202
+Negative Score: 0.3817663817663818
+Total Score: 0.5095011876484561
+
+====== EPOCH:1500 ======
+>> Train
+Positive Score: 0.7726051924798567
+Negative Score: 0.41818181818181815
+Total Score: 0.6164246369554331
+>> Test
+Positive Score: 0.7311608961303462
+Negative Score: 0.2934472934472934
+Total Score: 0.5486935866983373
+
+====== EPOCH:1600 ======
+>> Train
+Positive Score: 0.7108325872873769
+Negative Score: 0.5647727272727273
+Total Score: 0.6464697045568353
+>> Test
+Positive Score: 0.670061099796334
+Negative Score: 0.4017094017094017
+Total Score: 0.5581947743467933
+
+====== EPOCH:1700 ======
+>> Train
+Positive Score: 0.8084153983885407
+Negative Score: 0.55
+Total Score: 0.6945418127190787
+>> Test
+Positive Score: 0.6761710794297352
+Negative Score: 0.41595441595441596
+Total Score: 0.5676959619952494
+
+====== EPOCH:1800 ======
+>> Train
+Positive Score: 0.8478066248880931
+Negative Score: 0.6227272727272727
+Total Score: 0.7486229344016024
+>> Test
+Positive Score: 0.6945010183299389
+Negative Score: 0.37037037037037035
+Total Score: 0.5593824228028503
+
+====== EPOCH:1900 ======
+>> Train
+Positive Score: 0.7502238137869293
+Negative Score: 0.3034090909090909
+Total Score: 0.5533299949924887
+>> Test
+Positive Score: 0.7596741344195519
+Negative Score: 0.245014245014245
+Total Score: 0.5451306413301663
+
+====== EPOCH:2000 ======
+>> Train
+Positive Score: 0.8048343777976723
+Negative Score: 0.5943181818181819
+Total Score: 0.7120681021532298
+>> Test
+Positive Score: 0.6008146639511202
+Negative Score: 0.396011396011396
+Total Score: 0.5154394299287411
+
+====== EPOCH:2100 ======
+>> Train
+Positive Score: 0.8173679498657117
+Negative Score: 0.6681818181818182
+Total Score: 0.7516274411617426
+>> Test
+Positive Score: 0.5987780040733197
+Negative Score: 0.41025641025641024
+Total Score: 0.5201900237529691
+
+====== EPOCH:2200 ======
+>> Train
+Positive Score: 0.7314234556848702
+Negative Score: 0.4590909090909091
+Total Score: 0.6114171256885328
+>> Test
+Positive Score: 0.6191446028513238
+Negative Score: 0.3732193732193732
+Total Score: 0.5166270783847982
+
+====== EPOCH:2300 ======
+>> Train
+Positive Score: 0.8012533572068039
+Negative Score: 0.48863636363636365
+Total Score: 0.6634952428642964
+>> Test
+Positive Score: 0.6680244399185336
+Negative Score: 0.3504273504273504
+Total Score: 0.5356294536817102
+
+====== EPOCH:2400 ======
+>> Train
+Positive Score: 0.7627573858549687
+Negative Score: 0.38636363636363635
+Total Score: 0.5968953430145217
+>> Test
+Positive Score: 0.714867617107943
+Negative Score: 0.3076923076923077
+Total Score: 0.5451306413301663
+
+====== EPOCH:2500 ======
+>> Train
+Positive Score: 0.8227394807520143
+Negative Score: 0.4375
+Total Score: 0.6529794692038057
+>> Test
+Positive Score: 0.7617107942973523
+Negative Score: 0.2905982905982906
+Total Score: 0.5653206650831354
+
+====== EPOCH:2600 ======
+>> Train
+Positive Score: 0.6293643688451208
+Negative Score: 0.38181818181818183
+Total Score: 0.5202804206309464
+>> Test
+Positive Score: 0.5865580448065173
+Negative Score: 0.42735042735042733
+Total Score: 0.5201900237529691
+
+====== EPOCH:2700 ======
+>> Train
+Positive Score: 0.6705461056401074
+Negative Score: 0.36477272727272725
+Total Score: 0.5358037055583375
+>> Test
+Positive Score: 0.6069246435845214
+Negative Score: 0.3817663817663818
+Total Score: 0.5130641330166271
+
+====== EPOCH:2800 ======
+>> Train
+Positive Score: 0.8102059086839749
+Negative Score: 0.21022727272727273
+Total Score: 0.5458187280921382
+>> Test
+Positive Score: 0.7556008146639511
+Negative Score: 0.20512820512820512
+Total Score: 0.5261282660332541
+
+====== EPOCH:2900 ======
+>> Train
+Positive Score: 0.7323187108325873
+Negative Score: 0.3090909090909091
+Total Score: 0.5458187280921382
+>> Test
+Positive Score: 0.6761710794297352
+Negative Score: 0.2849002849002849
+Total Score: 0.5130641330166271
+
+====== EPOCH:3000 ======
+>> Train
+Positive Score: 0.8397493285586393
+Negative Score: 0.20227272727272727
+Total Score: 0.5588382573860792
+>> Test
+Positive Score: 0.8105906313645621
+Negative Score: 0.150997150997151
+Total Score: 0.5356294536817102
+
+====== EPOCH:3100 ======
+>> Train
+Positive Score: 0.6633840644583706
+Negative Score: 0.3488636363636364
+Total Score: 0.5247871807711567
+>> Test
+Positive Score: 0.615071283095723
+Negative Score: 0.3732193732193732
+Total Score: 0.5142517814726841
+
+====== EPOCH:3200 ======
+>> Train
+Positive Score: 0.9015219337511191
+Negative Score: 0.12272727272727273
+Total Score: 0.558337506259389
+>> Test
+Positive Score: 0.8737270875763747
+Negative Score: 0.09686609686609686
+Total Score: 0.5498812351543944
+
+====== EPOCH:3300 ======
+>> Train
+Positive Score: 0.9319606087735004
+Negative Score: 0.06477272727272727
+Total Score: 0.5498247371056585
+>> Test
+Positive Score: 0.9409368635437881
+Negative Score: 0.045584045584045586
+Total Score: 0.5676959619952494
+
+====== EPOCH:3400 ======
+>> Train
+Positive Score: 0.4897045658012534
+Negative Score: 0.5079545454545454
+Total Score: 0.49774661992989483
+>> Test
+Positive Score: 0.42973523421588594
+Negative Score: 0.584045584045584
+Total Score: 0.49406175771971494
+
+====== EPOCH:3500 ======
+>> Train
+Positive Score: 0.7976723366159355
+Negative Score: 0.225
+Total Score: 0.5453179769654481
+>> Test
+Positive Score: 0.7739307535641547
+Negative Score: 0.20797720797720798
+Total Score: 0.5380047505938242
+
+====== EPOCH:3600 ======
+>> Train
+Positive Score: 0.5559534467323187
+Negative Score: 0.4602272727272727
+Total Score: 0.513770655983976
+>> Test
+Positive Score: 0.5213849287169042
+Negative Score: 0.5042735042735043
+Total Score: 0.5142517814726841
+
+====== EPOCH:3700 ======
+>> Train
+Positive Score: 0.5219337511190689
+Negative Score: 0.4943181818181818
+Total Score: 0.5097646469704556
+>> Test
+Positive Score: 0.4908350305498982
+Negative Score: 0.5270655270655271
+Total Score: 0.505938242280285
+
+====== EPOCH:3800 ======
+>> Train
+Positive Score: 0.7806624888093107
+Negative Score: 0.24431818181818182
+Total Score: 0.5443164747120681
+>> Test
+Positive Score: 0.7474541751527495
+Negative Score: 0.23931623931623933
+Total Score: 0.5356294536817102
+
+====== EPOCH:3900 ======
+>> Train
+Positive Score: 0.9794091316025068
+Negative Score: 0.029545454545454545
+Total Score: 0.5608412618928392
+>> Test
+Positive Score: 0.9572301425661914
+Negative Score: 0.02849002849002849
+Total Score: 0.5700712589073634
+
+====== EPOCH:4000 ======
+>> Train
+Positive Score: 0.954341987466428
+Negative Score: 0.060227272727272727
+Total Score: 0.5603405107661492
+>> Test
+Positive Score: 0.9429735234215886
+Negative Score: 0.05413105413105413
+Total Score: 0.5724465558194775
+
+====== EPOCH:4100 ======
+>> Train
+Positive Score: 0.9158460161145927
+Negative Score: 0.14431818181818182
+Total Score: 0.5758637956935403
+>> Test
+Positive Score: 0.9022403258655805
+Negative Score: 0.1111111111111111
+Total Score: 0.5724465558194775
+
+====== EPOCH:4200 ======
+>> Train
+Positive Score: 0.9749328558639212
+Negative Score: 0.038636363636363635
+Total Score: 0.5623435152729094
+>> Test
+Positive Score: 0.9572301425661914
+Negative Score: 0.03133903133903134
+Total Score: 0.5712589073634204
+
+====== EPOCH:4300 ======
+>> Train
+Positive Score: 0.9937332139659804
+Negative Score: 0.014772727272727272
+Total Score: 0.5623435152729094
+>> Test
+Positive Score: 0.9816700610997964
+Negative Score: 0.008547008547008548
+Total Score: 0.5760095011876485
+
+====== EPOCH:4400 ======
+>> Train
+Positive Score: 0.7761862130707251
+Negative Score: 0.2988636363636364
+Total Score: 0.5658487731597396
+>> Test
+Positive Score: 0.7617107942973523
+Negative Score: 0.2222222222222222
+Total Score: 0.5368171021377672
+
+====== EPOCH:4500 ======
+>> Train
+Positive Score: 0.9677708146821844
+Negative Score: 0.06477272727272727
+Total Score: 0.5698547821732599
+>> Test
+Positive Score: 0.9490835030549898
+Negative Score: 0.05982905982905983
+Total Score: 0.5783847980997625
+
+====== EPOCH:4600 ======
+>> Train
+Positive Score: 0.8334825425246195
+Negative Score: 0.2556818181818182
+Total Score: 0.5788683024536805
+>> Test
+Positive Score: 0.7759674134419552
+Negative Score: 0.2535612535612536
+Total Score: 0.5581947743467933
+
+====== EPOCH:4700 ======
+>> Train
+Positive Score: 0.9221128021486124
+Negative Score: 0.1318181818181818
+Total Score: 0.5738607911867801
+>> Test
+Positive Score: 0.8859470468431772
+Negative Score: 0.1111111111111111
+Total Score: 0.5629453681710214
+
+====== EPOCH:4800 ======
+>> Train
+Positive Score: 0.936436884512086
+Negative Score: 0.1318181818181818
+Total Score: 0.5818728092138208
+>> Test
+Positive Score: 0.90020366598778
+Negative Score: 0.07977207977207977
+Total Score: 0.5581947743467933
+
+====== EPOCH:4900 ======
+>> Train
+Positive Score: 0.8675022381378693
+Negative Score: 0.21818181818181817
+Total Score: 0.5813720580871307
+>> Test
+Positive Score: 0.8126272912423625
+Negative Score: 0.16809116809116809
+Total Score: 0.5439429928741093
+
+====== EPOCH:5000 ======
+>> Train
+Positive Score: 0.9319606087735004
+Negative Score: 0.16022727272727272
+Total Score: 0.5918878317476214
+>> Test
+Positive Score: 0.8778004073319755
+Negative Score: 0.09116809116809117
+Total Score: 0.5498812351543944
+
+====== EPOCH:5100 ======
+>> Train
+Positive Score: 0.8889883616830797
+Negative Score: 0.24204545454545454
+Total Score: 0.6039058587881823
+>> Test
+Positive Score: 0.8431771894093686
+Negative Score: 0.1452991452991453
+Total Score: 0.5522565320665083
+
+====== EPOCH:5200 ======
+>> Train
+Positive Score: 0.8728737690241719
+Negative Score: 0.3034090909090909
+Total Score: 0.6219328993490235
+>> Test
+Positive Score: 0.7963340122199593
+Negative Score: 0.21367521367521367
+Total Score: 0.5534441805225653
+
+====== EPOCH:5300 ======
+>> Train
+Positive Score: 0.9435989256938228
+Negative Score: 0.10909090909090909
+Total Score: 0.5758637956935403
+>> Test
+Positive Score: 0.879837067209776
+Negative Score: 0.09686609686609686
+Total Score: 0.5534441805225653
+
+====== EPOCH:5400 ======
+>> Train
+Positive Score: 0.855863921217547
+Negative Score: 0.3079545454545455
+Total Score: 0.614421632448673
+>> Test
+Positive Score: 0.8004073319755601
+Negative Score: 0.19373219373219372
+Total Score: 0.5475059382422803
+
+====== EPOCH:5500 ======
+>> Train
+Positive Score: 0.8988361683079678
+Negative Score: 0.28295454545454546
+Total Score: 0.6274411617426139
+>> Test
+Positive Score: 0.8289205702647657
+Negative Score: 0.14245014245014245
+Total Score: 0.5427553444180523
+
+====== EPOCH:5600 ======
+>> Train
+Positive Score: 0.8245299910474485
+Negative Score: 0.37386363636363634
+Total Score: 0.6259389083625438
+>> Test
+Positive Score: 0.725050916496945
+Negative Score: 0.24786324786324787
+Total Score: 0.5261282660332541
+
+====== EPOCH:5700 ======
+>> Train
+Positive Score: 0.8003581020590869
+Negative Score: 0.4625
+Total Score: 0.6514772158237356
+>> Test
+Positive Score: 0.6761710794297352
+Negative Score: 0.31054131054131057
+Total Score: 0.5237529691211401
+
+====== EPOCH:5800 ======
+>> Train
+Positive Score: 0.9015219337511191
+Negative Score: 0.35113636363636364
+Total Score: 0.6589884827240862
+>> Test
+Positive Score: 0.7881873727087576
+Negative Score: 0.19943019943019943
+Total Score: 0.5427553444180523
+
+====== EPOCH:5900 ======
+>> Train
+Positive Score: 0.8657117278424351
+Negative Score: 0.4056818181818182
+Total Score: 0.6629944917376064
+>> Test
+Positive Score: 0.7494908350305499
+Negative Score: 0.2336182336182336
+Total Score: 0.5344418052256532
+
+====== EPOCH:6000 ======
+>> Train
+Positive Score: 0.8093106535362579
+Negative Score: 0.49886363636363634
+Total Score: 0.6725087631447171
+>> Test
+Positive Score: 0.6843177189409368
+Negative Score: 0.36752136752136755
+Total Score: 0.5522565320665083
+
+====== EPOCH:6100 ======
+>> Train
+Positive Score: 0.8084153983885407
+Negative Score: 0.5284090909090909
+Total Score: 0.685027541311968
+>> Test
+Positive Score: 0.659877800407332
+Negative Score: 0.3418803418803419
+Total Score: 0.5273159144893111
+
+====== EPOCH:6200 ======
+>> Train
+Positive Score: 0.7045658012533572
+Negative Score: 0.6590909090909091
+Total Score: 0.684526790185278
+>> Test
+Positive Score: 0.5356415478615071
+Negative Score: 0.5128205128205128
+Total Score: 0.5261282660332541
+
+====== EPOCH:6300 ======
+>> Train
+Positive Score: 0.6535362578334826
+Negative Score: 0.7102272727272727
+Total Score: 0.6785177766649975
+>> Test
+Positive Score: 0.45417515274949083
+Negative Score: 0.5327635327635327
+Total Score: 0.48693586698337293
+
+====== EPOCH:6400 ======
+>> Train
+Positive Score: 0.8030438675022381
+Negative Score: 0.6443181818181818
+Total Score: 0.7330996494742114
+>> Test
+Positive Score: 0.6435845213849287
+Negative Score: 0.36752136752136755
+Total Score: 0.5285035629453682
+
+====== EPOCH:6500 ======
+>> Train
+Positive Score: 0.8299015219337511
+Negative Score: 0.5897727272727272
+Total Score: 0.7240861291937907
+>> Test
+Positive Score: 0.6741344195519349
+Negative Score: 0.35327635327635326
+Total Score: 0.5403800475059383
+
+====== EPOCH:6600 ======
+>> Train
+Positive Score: 0.8388540734109221
+Negative Score: 0.5875
+Total Score: 0.728092138207311
+>> Test
+Positive Score: 0.6476578411405295
+Negative Score: 0.3475783475783476
+Total Score: 0.5225653206650831
+
+====== EPOCH:6700 ======
+>> Train
+Positive Score: 0.7735004476275739
+Negative Score: 0.6943181818181818
+Total Score: 0.7386079118678017
+>> Test
+Positive Score: 0.5784114052953157
+Negative Score: 0.47293447293447294
+Total Score: 0.5344418052256532
+
+====== EPOCH:6800 ======
+>> Train
+Positive Score: 0.7851387645478961
+Negative Score: 0.3704545454545455
+Total Score: 0.6024036054081122
+>> Test
+Positive Score: 0.7331975560081466
+Negative Score: 0.2535612535612536
+Total Score: 0.5332541567695962
+
+====== EPOCH:6900 ======
+>> Train
+Positive Score: 0.7717099373321397
+Negative Score: 0.31477272727272726
+Total Score: 0.5703555332999499
+>> Test
+Positive Score: 0.7637474541751528
+Negative Score: 0.19373219373219372
+Total Score: 0.5261282660332541
+
+====== EPOCH:7000 ======
+>> Train
+Positive Score: 0.5040286481647269
+Negative Score: 0.6886363636363636
+Total Score: 0.585378067100651
+>> Test
+Positive Score: 0.38289205702647655
+Negative Score: 0.5868945868945868
+Total Score: 0.4679334916864608
+
+====== EPOCH:7100 ======
+>> Train
+Positive Score: 0.7090420769919427
+Negative Score: 0.44431818181818183
+Total Score: 0.5923885828743115
+>> Test
+Positive Score: 0.615071283095723
+Negative Score: 0.3475783475783476
+Total Score: 0.503562945368171
+
+====== EPOCH:7200 ======
+>> Train
+Positive Score: 0.8299015219337511
+Negative Score: 0.4147727272727273
+Total Score: 0.6469704556835253
+>> Test
+Positive Score: 0.7046843177189409
+Negative Score: 0.26495726495726496
+Total Score: 0.5213776722090261
+
+====== EPOCH:7300 ======
+>> Train
+Positive Score: 0.6544315129811996
+Negative Score: 0.5465909090909091
+Total Score: 0.6069103655483225
+>> Test
+Positive Score: 0.5173116089613035
+Negative Score: 0.4045584045584046
+Total Score: 0.47030878859857483
+
+====== EPOCH:7400 ======
+>> Train
+Positive Score: 0.8782452999104745
+Negative Score: 0.31136363636363634
+Total Score: 0.628442663995994
+>> Test
+Positive Score: 0.790224032586558
+Negative Score: 0.1794871794871795
+Total Score: 0.5356294536817102
+
+====== EPOCH:7500 ======
+>> Train
+Positive Score: 0.8281110116383169
+Negative Score: 0.3079545454545455
+Total Score: 0.5988983475212819
+>> Test
+Positive Score: 0.7494908350305499
+Negative Score: 0.20797720797720798
+Total Score: 0.5237529691211401
+
+====== EPOCH:7600 ======
+>> Train
+Positive Score: 0.8782452999104745
+Negative Score: 0.30227272727272725
+Total Score: 0.6244366549824737
+>> Test
+Positive Score: 0.7861507128309573
+Negative Score: 0.18233618233618235
+Total Score: 0.5344418052256532
+
+====== EPOCH:7700 ======
+>> Train
+Positive Score: 0.8719785138764548
+Negative Score: 0.37386363636363634
+Total Score: 0.6524787180771157
+>> Test
+Positive Score: 0.7515274949083504
+Negative Score: 0.19658119658119658
+Total Score: 0.5201900237529691
+
+====== EPOCH:7800 ======
+>> Train
+Positive Score: 0.8845120859444942
+Negative Score: 0.3443181818181818
+Total Score: 0.6464697045568353
+>> Test
+Positive Score: 0.7841140529531568
+Negative Score: 0.18233618233618235
+Total Score: 0.5332541567695962
+
+====== EPOCH:7900 ======
+>> Train
+Positive Score: 0.9042076991942704
+Negative Score: 0.33181818181818185
+Total Score: 0.6519779669504256
+>> Test
+Positive Score: 0.790224032586558
+Negative Score: 0.18518518518518517
+Total Score: 0.5380047505938242
+
+====== EPOCH:8000 ======
+>> Train
+Positive Score: 0.8352730528200537
+Negative Score: 0.5375
+Total Score: 0.7040560841261893
+>> Test
+Positive Score: 0.6782077393075356
+Negative Score: 0.3076923076923077
+Total Score: 0.5237529691211401
+
+====== EPOCH:8100 ======
+>> Train
+Positive Score: 0.8119964189794091
+Negative Score: 0.3534090909090909
+Total Score: 0.6099148723084626
+>> Test
+Positive Score: 0.745417515274949
+Negative Score: 0.2222222222222222
+Total Score: 0.5273159144893111
+
+====== EPOCH:8200 ======
+>> Train
+Positive Score: 0.8352730528200537
+Negative Score: 0.45454545454545453
+Total Score: 0.6675012518778167
+>> Test
+Positive Score: 0.7107942973523421
+Negative Score: 0.26495726495726496
+Total Score: 0.5249406175771971
+
+====== EPOCH:8300 ======
+>> Train
+Positive Score: 0.9328558639212176
+Negative Score: 0.3465909090909091
+Total Score: 0.6745117676514772
+>> Test
+Positive Score: 0.824847250509165
+Negative Score: 0.18803418803418803
+Total Score: 0.5593824228028503
+
+====== EPOCH:8400 ======
+>> Train
+Positive Score: 0.7493285586392122
+Negative Score: 0.6431818181818182
+Total Score: 0.7025538307461192
+>> Test
+Positive Score: 0.5560081466395111
+Negative Score: 0.39886039886039887
+Total Score: 0.49049881235154397
+
+====== EPOCH:8500 ======
+>> Train
+Positive Score: 0.7600716204118174
+Negative Score: 0.65
+Total Score: 0.7115673510265398
+>> Test
+Positive Score: 0.5641547861507128
+Negative Score: 0.4074074074074074
+Total Score: 0.498812351543943
+
+====== EPOCH:8600 ======
+>> Train
+Positive Score: 0.7081468218442256
+Negative Score: 0.7068181818181818
+Total Score: 0.7075613420130196
+>> Test
+Positive Score: 0.515274949083503
+Negative Score: 0.45014245014245013
+Total Score: 0.48812351543942994
+
+====== EPOCH:8700 ======
+>> Train
+Positive Score: 0.8370635631154879
+Negative Score: 0.6295454545454545
+Total Score: 0.7456184276414622
+>> Test
+Positive Score: 0.6476578411405295
+Negative Score: 0.3561253561253561
+Total Score: 0.5261282660332541
+
+====== EPOCH:8800 ======
+>> Train
+Positive Score: 0.8692927484333035
+Negative Score: 0.5875
+Total Score: 0.7451176765147721
+>> Test
+Positive Score: 0.6619144602851323
+Negative Score: 0.30484330484330485
+Total Score: 0.5130641330166271
+
+====== EPOCH:8900 ======
+>> Train
+Positive Score: 0.864816472694718
+Negative Score: 0.6306818181818182
+Total Score: 0.7616424636955433
+>> Test
+Positive Score: 0.6558044806517311
+Negative Score: 0.29914529914529914
+Total Score: 0.5071258907363421
+
+====== EPOCH:9000 ======
+>> Train
+Positive Score: 0.7914055505819159
+Negative Score: 0.7215909090909091
+Total Score: 0.7606409614421632
+>> Test
+Positive Score: 0.5580448065173116
+Negative Score: 0.396011396011396
+Total Score: 0.49049881235154397
+
+====== EPOCH:9100 ======
+>> Train
+Positive Score: 0.8621307072515667
+Negative Score: 0.6238636363636364
+Total Score: 0.757135703555333
+>> Test
+Positive Score: 0.6476578411405295
+Negative Score: 0.301994301994302
+Total Score: 0.503562945368171
+
+====== EPOCH:9200 ======
+>> Train
+Positive Score: 0.8281110116383169
+Negative Score: 0.6954545454545454
+Total Score: 0.7696544817225839
+>> Test
+Positive Score: 0.5723014256619144
+Negative Score: 0.37037037037037035
+Total Score: 0.48812351543942994
+
+====== EPOCH:9300 ======
+>> Train
+Positive Score: 0.6965085049239033
+Negative Score: 0.5590909090909091
+Total Score: 0.6359539308963446
+>> Test
+Positive Score: 0.604887983706721
+Negative Score: 0.36752136752136755
+Total Score: 0.505938242280285
+
+====== EPOCH:9400 ======
+>> Train
+Positive Score: 0.8281110116383169
+Negative Score: 0.39431818181818185
+Total Score: 0.6369554331497246
+>> Test
+Positive Score: 0.7515274949083504
+Negative Score: 0.23076923076923078
+Total Score: 0.5344418052256532
+
+====== EPOCH:9500 ======
+>> Train
+Positive Score: 0.7609668755595345
+Negative Score: 0.5670454545454545
+Total Score: 0.6755132699048573
+>> Test
+Positive Score: 0.5906313645621182
+Negative Score: 0.38461538461538464
+Total Score: 0.504750593824228
+
+====== EPOCH:9600 ======
+>> Train
+Positive Score: 0.8719785138764548
+Negative Score: 0.5056818181818182
+Total Score: 0.7105658487731598
+>> Test
+Positive Score: 0.7433808553971487
+Negative Score: 0.27350427350427353
+Total Score: 0.5475059382422803
+
+====== EPOCH:9700 ======
+>> Train
+Positive Score: 0.7457475380483438
+Negative Score: 0.44431818181818183
+Total Score: 0.6129193790686029
+>> Test
+Positive Score: 0.7169042769857433
+Negative Score: 0.2962962962962963
+Total Score: 0.5415676959619953
+
+====== EPOCH:9800 ======
+>> Train
+Positive Score: 0.8200537153088631
+Negative Score: 0.39204545454545453
+Total Score: 0.6314471707561342
+>> Test
+Positive Score: 0.745417515274949
+Negative Score: 0.21937321937321938
+Total Score: 0.5261282660332541
+
+====== EPOCH:9900 ======
+>> Train
+Positive Score: 0.8415398388540735
+Negative Score: 0.45340909090909093
+Total Score: 0.6705057586379569
+>> Test
+Positive Score: 0.7556008146639511
+Negative Score: 0.23646723646723647
+Total Score: 0.5391923990498813
+
